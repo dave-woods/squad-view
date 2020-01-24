@@ -49,6 +49,24 @@ export default {
     ]
   },
   getters: {
-    getAllMembers: state => state.members
+    getAllMembers: state => state.members,
+    getMemberByName: state => name => state.members.find(m => m.name === name)
+  },
+  mutations: {
+    addMember(state, newMember) {
+      state.members = [
+        ...state.members,
+        {
+          id: state.nextId,
+          name: newMember
+        }
+      ]
+      state.nextId++
+    }
+  },
+  actions: {
+    addMember({ commit }, newMember) {
+      commit('addMember', newMember)
+    }
   }
 }

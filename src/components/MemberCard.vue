@@ -1,8 +1,8 @@
 <template>
 	<v-card
-		style="display: grid; grid-template-columns: 1fr 2fr; height: 6em"
+		style="display: grid; grid-template-columns: 1fr 2fr"
 	>
-		<div style="display: flex; flex-direction: column">
+		<div style="display: flex; flex-direction: column; justify-content: center; align-items: center">
 			<v-card-title>{{ member.name }}</v-card-title>
 			<v-card-subtitle>{{ `${avgTimes.length} sessions` }}</v-card-subtitle>
 		</div>
@@ -11,8 +11,11 @@
 			:value="avgTimes"
 			auto-draw
 			:line-width="5"
-			smooth="10"
+			:smooth="10"
 			stroke-linecap="round"
+			:gradient="['green', 'red']"
+			:padding="20"
+			:height="150"
 		></v-sparkline>
 		<v-card-text v-else style="display: flex; justify-content: center; align-items: center">
 			More data needed...
