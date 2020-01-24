@@ -4,9 +4,6 @@ import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
 
-import TrendChart from 'vue-trend-chart'
-Vue.use(TrendChart)
-
 Vue.config.productionTip = false
 
 new Vue({
