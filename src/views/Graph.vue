@@ -47,18 +47,18 @@
 						:rules="[v => v.length > 0]"
 					></v-combobox>
 					<v-container
-						v-for="(ms, j) in memberSelect"
-						:key="j"
+						v-for="(ms, idx) in memberSelect"
+						:key="idx"
 					>
 						<v-row dense>
-							<v-col align-self="center" cols="3">{{ ms }}</v-col>
+							<v-col align-self="center" cols="3">{{ ms.text || ms }}</v-col>
 							<v-col>
 								<v-text-field
 									label="Enter 1st time of flight"
 									hide-details
 									outlined
 									:rules="[validTime]"
-									v-model="saveData[ms][0]"
+									v-model="saveData[idx][0]"
 								></v-text-field>
 							</v-col>
 							<v-col>
@@ -67,7 +67,7 @@
 									hide-details
 									outlined
 									:rules="[validTime]"
-									v-model="saveData[ms][1]"
+									v-model="saveData[idx][1]"
 								></v-text-field>
 							</v-col>
 						</v-row>
@@ -108,10 +108,17 @@ export default {
 			})
 		},
 		members() {
-			return this.$store.getters.getAllMembers.map(m => m.name)
+			return this.$store.getters.getAllMembers.map(m => ({
+				text: m.name,
+				value: m.id
+			}))
 		},
 		saveData() {
-			return Object.fromEntries(this.memberSelect.map(m => [m, Array(2)]))
+			const sd = []
+			this.memberSelect.forEach(ms => {
+				sd.push(Array(2))
+			})
+			return sd
 		},
 		numSessions() {
 			return this.$store.getters.getSessions.length
@@ -122,16 +129,23 @@ export default {
 			if (!this.formValid) {
 				return
 			}
-			this.memberSelect.filter(ms => !this.members.includes(ms)).forEach(nm => this.$store.dispatch('addMember', nm))
-			const sd = this.memberSelect.map(ms => {
-				return {
-					id: this.$store.getters.getMemberByName(ms).id,
-					times: this.saveData[ms].filter(t => t !== '-')
+			const tof = this.memberSelect.map((ms, idx) => {
+				if (ms.value) {
+					return {
+						id: ms.value,
+						times: this.saveData[idx].filter(t => t !== '-')
+					}
+				} else {
+					this.$store.dispatch('addMember', ms)
+					return {
+						id: this.$store.getters.getLastAddedMember.id,
+						times: this.saveData[idx].filter(t => t !== '-')
+					}
 				}
 			})
 			this.$store.dispatch('addSession', {
 				date: this.formDate,
-				tof: sd
+				tof
 			})
 			this.window = 0
 		},
