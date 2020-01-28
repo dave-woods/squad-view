@@ -1,6 +1,7 @@
 <template>
 	<v-card
 		style="display: grid; grid-template-columns: 1fr 2fr"
+		v-show="avgTimes.length > 1 || showSingleSession"
 	>
 		<div style="display: flex; flex-direction: column; justify-content: center; align-items: center">
 			<v-card-title>{{ member.name }}</v-card-title>
@@ -13,7 +14,8 @@
 			:line-width="5"
 			:smooth="10"
 			stroke-linecap="round"
-			:gradient="['green', 'red']"
+			:gradient="gradients.moss"
+			gradient-direction="left"
 			:padding="20"
 			:height="150"
 		></v-sparkline>
@@ -25,7 +27,16 @@
 
 <script>
 export default {
-	props: ['member'],
+	data() {
+  	return {
+  		gradients: {
+  	    titanium: ['#283048', '#859398'],
+  			opa: ['#3D7EAA', '#FFE47A'],
+				moss: ['#134E5E', '#71B280']
+  		}
+		}
+	},
+	props: ['member', 'showSingleSession'],
 	computed: {
 		avgTimes() {
 			return this.member.avgTimes.filter(t => t > 0)

@@ -4,6 +4,7 @@
       app
       color="primary"
       dark
+			style="background: linear-gradient(to right, #134E5E, #71B280)"
     >
       <div class="d-flex align-center">
         <v-img
