@@ -32,6 +32,7 @@
 
       <v-btn
         text
+				@click="$router.push('/admin')"
       >
         <span class="mr-2">Admin</span>
         <v-icon>mdi-settings</v-icon>
