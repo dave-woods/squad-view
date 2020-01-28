@@ -6,12 +6,13 @@
       dark
 			style="background: linear-gradient(to right, #134E5E, #71B280)"
     >
+			<router-link to="/">
       <div class="d-flex align-center">
         <v-img
-          alt="Vuetify Logo"
+          alt="Logo"
           class="shrink mr-2"
           contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
+          :src="require('./assets/logo.png')"
           transition="scale-transition"
           width="40"
         />
@@ -21,20 +22,19 @@
           class="shrink mt-1 hidden-sm-and-down"
           contain
           min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
+          :src="require('./assets/app-name.png')"
           width="100"
         />
       </div>
+			</router-link>
 
       <v-spacer></v-spacer>
 
       <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
         text
       >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
+        <span class="mr-2">Admin</span>
+        <v-icon>mdi-settings</v-icon>
       </v-btn>
     </v-app-bar>
 
@@ -45,17 +45,7 @@
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
-
 export default {
-  name: 'App',
-
-  components: {
-    // HelloWorld,
-  },
-
-  data: () => ({
-    //
-  }),
+  name: 'App'
 };
 </script>
