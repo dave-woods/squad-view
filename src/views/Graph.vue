@@ -7,6 +7,7 @@
 					v-for="(v, i) in namesAndTimes"
 					:key="`member-card-${i}`"
 					:member="v"
+					:showSingleSession="showSingleSession"
 				>
 				</member-card>
 				<v-btn style="grid-column: 1 / span 2" class="mx-12" @click="addSession()">Add Session</v-btn>
@@ -83,10 +84,13 @@
 
 <script>
 import MemberCard from '../components/MemberCard'
+import { requestsMixin } from '../mixins/requestsMixin'
 export default {
+	mixins: [requestsMixin],
 	data() {
 		return {
 			window: 0,
+			showSingleSession: false,
 			memberSelect: [],
 			formValid: false,
 			formDate: new Date().toISOString().substr(0, 10),
@@ -133,19 +137,21 @@ export default {
 				if (ms.value) {
 					return {
 						id: ms.value,
-						times: this.saveData[idx].filter(t => t !== '-')
+						times: this.saveData[idx].filter(t => t !== '-').map(t => parseFloat(t))
 					}
 				} else {
 					this.$store.dispatch('addMember', ms)
 					return {
 						id: this.$store.getters.getLastAddedMember.id,
-						times: this.saveData[idx].filter(t => t !== '-')
+						times: this.saveData[idx].filter(t => t !== '-').map(t => parsefloat(t))
 					}
 				}
 			})
 			this.$store.dispatch('addSession', {
 				date: this.formDate,
 				tof
+			}).then(() => {
+				this.saveStateToDB()
 			})
 			this.window = 0
 		},
@@ -156,7 +162,18 @@ export default {
 				this.$refs.form.resetValidation()
 			}
 			this.window = 1
+		},
+		async loadStateFromDB() {
+			const { data } = await this.getStateFromDB()
+			this.$store.dispatch('updateMembersState', data.members)
+			this.$store.dispatch('updateSessionsState', data.sessions)
+		},
+		async saveStateToDB() {
+			await this.setStateToDB(this.$store.state)
 		}
+	},
+	beforeMount() {
+		this.loadStateFromDB()
 	},
 	components: {
 		'member-card': MemberCard

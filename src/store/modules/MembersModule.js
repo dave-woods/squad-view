@@ -1,52 +1,7 @@
 export default {
   state: {
-    nextId: 12,
-    members: [
-      {
-        id: 1,
-        name: 'Cathal Hannafin'
-      },
-      {
-        id: 2,
-        name: 'Caitríona Quinn'
-      },
-      {
-        id: 3,
-        name: 'Adelais Farnell Sharp'
-      },
-      {
-        id: 4,
-        name: 'Seán Murray'
-      },
-      {
-        id: 5,
-        name: 'Alastair McGuckian'
-      },
-      {
-        id: 6,
-        name: 'Dave Woods'
-      },
-      {
-        id: 7,
-        name: 'Nessa Scorey'
-      },
-      {
-        id: 8,
-        name: 'Aisling Byrne'
-      },
-      {
-        id: 9,
-        name: 'Kim Sheehan Thomas'
-      },
-      {
-        id: 10,
-        name: 'Conor Kiely'
-      },
-      {
-        id: 11,
-        name: 'Órlaith Geary'
-      }
-    ]
+    nextId: 1,
+    members: []
   },
   getters: {
     getAllMembers: state => state.members,
@@ -63,11 +18,18 @@ export default {
         }
       ]
       state.nextId++
+    },
+    updateMembersState(state, newState) {
+      state.members = [...newState.members]
+      state.nextId = newState.nextId
     }
   },
   actions: {
     addMember({ commit }, newMember) {
       commit('addMember', newMember)
+    },
+    updateMembersState({ commit }, newState) {
+      commit('updateMembersState', newState)
     }
   }
 }
