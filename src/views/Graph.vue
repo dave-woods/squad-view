@@ -3,11 +3,11 @@
 		<v-window-item>
 			<v-container style="position: relative; display: grid; grid-template-columns: 1fr 1fr; grid-gap: 10px">
 				<h1 style="grid-column: 1 / span 2; text-align: center">Time of Flight</h1>
+				<v-switch v-model="showSingleSession" label="Show members with only one session" style="position: absolute; bottom: -40px; left: 10px"></v-switch>
 				<member-card
-					v-for="(v, i) in namesAndTimes"
+					v-for="(v, i) in memberCards"
 					:key="`member-card-${i}`"
 					:member="v"
-					:showSingleSession="showSingleSession"
 				>
 				</member-card>
 				<v-btn style="grid-column: 1 / span 2" class="mx-12" @click="addSession()">Add Session</v-btn>
@@ -110,6 +110,9 @@ export default {
 					avgTimes: this.$store.getters.getAvgTimesById(m.id)
 				}
 			})
+		},
+		memberCards() {
+			return this.showSingleSession ? this.namesAndTimes : this.namesAndTimes.filter(n => n.avgTimes.filter(t => t > 0).length > 1)
 		},
 		members() {
 			return this.$store.getters.getAllMembers.map(m => ({

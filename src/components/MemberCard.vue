@@ -1,7 +1,6 @@
 <template>
 	<v-card
 		style="display: grid; grid-template-columns: 1fr 2fr"
-		v-show="avgTimes.length > 1 || showSingleSession"
 	>
 		<div style="display: flex; flex-direction: column; justify-content: center; align-items: center">
 			<v-card-title>{{ member.name }}</v-card-title>
@@ -36,7 +35,7 @@ export default {
   		}
 		}
 	},
-	props: ['member', 'showSingleSession'],
+	props: ['member'],
 	computed: {
 		avgTimes() {
 			return this.member.avgTimes.filter(t => t > 0)
