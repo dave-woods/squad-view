@@ -146,7 +146,7 @@ export default {
 					this.$store.dispatch('addMember', ms)
 					return {
 						id: this.$store.getters.getLastAddedMember.id,
-						times: this.saveData[idx].filter(t => t !== '-').map(t => parsefloat(t))
+						times: this.saveData[idx].filter(t => t !== '-').map(t => parseFloat(t))
 					}
 				}
 			})
