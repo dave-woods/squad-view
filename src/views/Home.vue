@@ -65,8 +65,8 @@ export default {
 				to: '/about'
 			},
 			{
-				text: 'Events',
-				to: '/events'
+				text: 'Sessions',
+				to: '/sessions'
 			},
 			{
 				text: 'Training Plans',

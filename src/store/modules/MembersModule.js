@@ -6,7 +6,8 @@ export default {
   getters: {
     getAllMembers: state => state.members,
     getLastAddedMember: state => state.members[state.members.length - 1],
-    getMemberByName: state => name => state.members.find(m => m.name === name)
+    getMemberByName: state => name => state.members.find(m => m.name === name),
+    getMemberById: state => id => state.members.find(m => m.id === id)
   },
   mutations: {
     addMember(state, newMember) {
