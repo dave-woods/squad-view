@@ -46,7 +46,22 @@
 </template>
 
 <script>
+import { requestsMixin } from '@/mixins/requestsMixin'
 export default {
-  name: 'App'
+  name: 'App',
+	mixins: [requestsMixin],
+	methods: {
+		async loadStateFromDB() {
+			const { data } = await this.getStateFromDB()
+			this.$store.dispatch('updateMembersState', data.members)
+			this.$store.dispatch('updateSessionsState', data.sessions)
+		},
+		async saveStateToDB() {
+			await this.setStateToDB(this.$store.state)
+		}
+	},
+	beforeMount() {
+		this.loadStateFromDB()
+	}
 };
 </script>

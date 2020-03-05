@@ -175,9 +175,6 @@ export default {
 			await this.setStateToDB(this.$store.state)
 		}
 	},
-	beforeMount() {
-		this.loadStateFromDB()
-	},
 	components: {
 		'member-card': MemberCard
 	}
