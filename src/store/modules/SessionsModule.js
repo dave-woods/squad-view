@@ -5,7 +5,7 @@ export default {
   getters: {
     getAvgTimesById: state => id => state.sessions.map(sess => {
       const mem = sess.tof.find(m => m.id === id)
-      if (!mem) {
+      if (!mem || mem.times.length === 0) {
         return 0
       }
       return mem.times.reduce(
