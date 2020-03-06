@@ -24,6 +24,10 @@
 						@input="datePopout=false"
 					></v-date-picker>
 				</v-menu>
+				<v-text-field
+					v-model="formSubtitle"
+					label="Squad subtitle"
+				></v-text-field>
 				<v-combobox
 					v-model="memberSelect"
 					:items="members"
@@ -74,6 +78,7 @@ export default {
 	data() {
 		return {
 			datePopout: false,
+			formSubtitle: '',
 			formDate: new Date().toISOString().substr(0, 10),
 			formValid: false,
 			memberSelect: [],
@@ -120,6 +125,7 @@ export default {
 			})
 			this.$store.dispatch('addSession', {
 				date: this.formDate,
+				subtitle: this.formSubtitle,
 				tof
 			}).then(() => {
 				this.saveStateToDB()
@@ -130,6 +136,7 @@ export default {
 		resetForm() {
 			if (this.$refs.form) {
 				this.memberSelect = []
+				this.formSubtitle = '',
 				this.formDate = new Date().toISOString().substr(0, 10)
 				this.$refs.form.resetValidation()
 			}
