@@ -68,7 +68,9 @@
 </template>
 
 <script>
+import { requestsMixin } from '@/mixins/requestsMixin'
 export default {
+	mixins: [requestsMixin],
 	data() {
 		return {
 			datePopout: false,
@@ -121,6 +123,7 @@ export default {
 				tof
 			}).then(() => {
 				this.saveStateToDB()
+				this.$emit('save-form')
 				this.resetForm()
 			})
 		},

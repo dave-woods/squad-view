@@ -17,7 +17,7 @@
 				<template v-slot:activator="{ on }">
 					<v-btn v-on="on" color="#66A074" absolute right bottom fab title="Add new session"><v-icon>mdi-plus</v-icon></v-btn>
 				</template>
-				<new-session-form ref="nsform"></new-session-form>
+				<new-session-form ref="nsform" @save-form="displayForm = false"></new-session-form>
 			</v-dialog>
 		</v-card>
 		<v-timeline>
@@ -26,7 +26,7 @@
 					<span class="headline font-weight-bold">{{ session.date }}</span>
 				</template>
 				<v-card>
-					<v-card-title v-if="session.subtitle">"{{ session.subtitle }}"</v-card-title>
+					<v-card-title>"{{ session.subtitle || 'Squad' }}"</v-card-title>
 					<v-card-subtitle>Attendance: {{ session.tof.length }}</v-card-subtitle>
 					<v-card-text>
 						<ul>
