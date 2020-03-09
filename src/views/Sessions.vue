@@ -43,10 +43,10 @@
 				</template>
 				<v-card>
 					<v-card-title>"{{ session.subtitle || 'Squad' }}"</v-card-title>
-					<v-card-subtitle>Attendance: {{ session.tof.length }}</v-card-subtitle>
+					<v-card-subtitle>Attendance: {{ session.attendees.length }}</v-card-subtitle>
 					<v-card-text>
 						<ul>
-							<li v-for="m in session.tof">{{ getMember(m.id).name }}</li>
+							<li v-for="m in session.attendees" :key="m.id">{{ getMember(m.id).name }}</li>
 						</ul>
 					</v-card-text>
 				</v-card>
@@ -76,7 +76,7 @@ export default {
 			return this.sessionList.slice().reverse()
 		},
 		attendanceRates() {
-			return this.sessionList.map(s => s.tof.length)
+			return this.sessionList.map(s => s.attendees.length)
 		},
 		fromDate() {
 			return this.dateToDateString(this.sessionList[0].date)
