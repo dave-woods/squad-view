@@ -18,6 +18,16 @@ export default {
     addSession(state, newSession) {
       state.sessions = [...state.sessions, newSession]
     },
+    updateSession(state, session) {
+      var idx = state.sessions.findIndex(s => s.date === session.date)
+      if (idx > -1) {
+        state.sessions = [
+          ...state.sessions.slice(0, idx),
+          session,
+          ...state.sessions.slice(idx+1)
+        ]
+      }
+    },
     updateSessionsState(state, newState) {
       state.sessions = [...newState.sessions]
     }
@@ -25,6 +35,9 @@ export default {
   actions: {
     addSession({ commit }, newSession) {
       commit('addSession', newSession)
+    },
+    updateSession({ commit }, session) {
+      commit('updateSession', session)
     },
     updateSessionsState({ commit }, newState) {
       commit('updateSessionsState', newState)

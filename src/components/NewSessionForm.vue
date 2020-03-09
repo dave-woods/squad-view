@@ -130,6 +130,7 @@ export default {
 	data() {
 		return {
 			datePopout: false,
+			editing: false,
 			formConditioning: '',
 			formDate: new Date().toISOString().substr(0, 10),
 			formStep: 1,
@@ -139,7 +140,7 @@ export default {
 			memberSelect: [],
 			validTimeOfFlight: value => {
 				const pv = parseFloat(value)
-				return (value && value.toLowerCase() === '-') || (pv > 0 && pv < 30) || 'Invalid time entered.'
+				return (value && (value+"").toLowerCase() === '-') || (pv > 0 && pv < 30) || 'Invalid time entered.'
 			}
 
 		}
@@ -171,28 +172,46 @@ export default {
 				if (ms.value) {
 					return {
 						id: ms.value,
-						times: this.timeOfFlightData[idx].filter(t => t !== '-').map(t => parseFloat(t))
+						times: this.timeOfFlightData[idx].filter(t => t !== '-').map(t => parseFloat(t)),
+						goals: this.sessionGoalsData[idx]
 					}
 				} else {
-					this.$store.dispatch('addMember', ms)
+					this.$store.dispatch('addMember', { name: ms })
 					return {
 						id: this.$store.getters.getLastAddedMember.id,
-						times: this.timeOfFlightData[idx].filter(t => t !== '-').map(t => parseFloat(t))
+						times: this.timeOfFlightData[idx].filter(t => t !== '-').map(t => parseFloat(t)),
+						goals: this.sessionGoalsData[idx]
 					}
 				}
 			})
-			this.$store.dispatch('addSession', {
+			this.$store.dispatch(this.editing ? 'updateSession' : 'addSession', {
 				date: this.formDate,
 				subtitle: this.formSubtitle,
-				tof
+				conditioning: this.formConditioning,
+				attendees: tof
 			}).then(() => {
 				this.saveStateToDB()
 				this.$emit('close-form')
 				this.resetForm()
 			})
 		},
+		prefillForm(prefillData) {
+			this.resetForm()
+			this.editing = true
+			this.formConditioning = prefillData.conditioning || this.formConditioning
+			this.formDate = prefillData.date || this.formDate
+			this.formSubtitle = prefillData.subtitle || this.formSubtitle
+			this.memberSelect = this.members.filter(m => {
+				return prefillData.attendees.map(a => a.id).includes(m.value)
+			}) || this.memberSelect
+			prefillData.attendees.forEach((a, idx) => {
+				this.timeOfFlightData[idx] = a.times || this.timeOfFlightData[idx]
+				this.sessionGoalsData[idx] = a.goals || this.sessionGoalsData[idx]
+			})
+		},
 		resetForm() {
 			if (this.$refs.form) {
+				this.editing = false
 				this.memberSelect = []
 				this.formSubtitle = ''
 				this.formStep = 1

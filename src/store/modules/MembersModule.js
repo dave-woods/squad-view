@@ -15,10 +15,20 @@ export default {
         ...state.members,
         {
           id: state.nextId,
-          name: newMember
+          ...newMember
         }
       ]
       state.nextId++
+    },
+    updateMember(state, member) {
+      var idx = state.members.findIndex(m => m.id === member.id)
+      if (idx > -1) {
+        state.members = [
+          ...state.members.slice(0, idx),
+          member,
+          ...state.members.slice(idx+1)
+        ]
+      }
     },
     updateMembersState(state, newState) {
       state.members = [...newState.members]
@@ -28,6 +38,9 @@ export default {
   actions: {
     addMember({ commit }, newMember) {
       commit('addMember', newMember)
+    },
+    updateMember({ commit }, member) {
+      commit('updateMember', member)
     },
     updateMembersState({ commit }, newState) {
       commit('updateMembersState', newState)

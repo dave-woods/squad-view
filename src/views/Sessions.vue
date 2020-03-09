@@ -49,6 +49,9 @@
 							<li v-for="m in session.attendees" :key="m.id">{{ getMember(m.id).name }}</li>
 						</ul>
 					</v-card-text>
+					<v-card-actions v-if="editsAllowed">
+						<v-btn absolute right @click="editSession(session)">Edit</v-btn>
+					</v-card-actions>
 				</v-card>
 			</v-timeline-item>
 		</v-timeline>
@@ -62,10 +65,12 @@
 
 <script>
 import NewSessionForm from '@/components/NewSessionForm'
+import { setTimeout } from 'timers';
 export default {
 	data() {
 		return {
-			displayForm: false
+			displayForm: false,
+			editsAllowed: true
 		}
 	},
 	computed: {
@@ -95,6 +100,10 @@ export default {
 				month: 'long',
 				year: 'numeric'
 			})
+		},
+		editSession(session) {
+			this.displayForm = true
+			this.$nextTick().then(() => this.$refs.nsform.prefillForm(session))
 		}
 	},
 	components: {
