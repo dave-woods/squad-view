@@ -201,8 +201,12 @@ export default {
 			this.formConditioning = prefillData.conditioning || this.formConditioning
 			this.formDate = prefillData.date || this.formDate
 			this.formSubtitle = prefillData.subtitle || this.formSubtitle
-			this.memberSelect = this.members.filter(m => {
-				return prefillData.attendees.map(a => a.id).includes(m.value)
+			this.memberSelect = prefillData.attendees.map(a => {
+				var m = this.$store.getters.getMemberById(a.id)
+				return {
+					text: m.name,
+					value: m.id
+				}
 			}) || this.memberSelect
 			prefillData.attendees.forEach((a, idx) => {
 				this.timeOfFlightData[idx] = a.times || this.timeOfFlightData[idx]

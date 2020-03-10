@@ -71,7 +71,11 @@ export default {
 			{
 				text: 'Training Plans',
 				to: '/plans'
-			},
+      },
+      {
+        text: 'Members',
+        to: '/members'
+      },
 			{
 				text: 'Competition Scores',
 				to: '/scores'
