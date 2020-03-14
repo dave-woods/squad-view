@@ -12,11 +12,12 @@
             </v-btn>
         </div>
         <h1 v-else>Members</h1>
-        <line-chart :chart-data="chartData" :options="chartOptions"></line-chart>
+        <line-chart :chart-data="chartData" :options="chartOptions" :styles="{marginBottom: '1em'}"></line-chart>
         <ul v-if="currentMember">
-            <li>Trend: {{ normalisedSlope > 0 ? 'Positive' : 'Negtive' }} </li>
+            <li>Trend: {{ slope.toFixed(4) }} || {{ normalisedSlope.toFixed(4) }} </li>
             <li>Consistency: {{ stdDev }}</li>
-            <li>Highest Single Time: {{ highest }}</li>
+            <li>Highest Single Time: {{ highestTime }}</li>
+            <li>Average Time: {{ averageTime}}</li>
         </ul>
     </v-container>
 </template>
@@ -43,6 +44,10 @@ export default {
         members() {
             return this.$store.getters.getAllMembers
         },
+        averageTime() {
+            var times = this.$store.getters.getAvgTimesById(this.mid).filter(y => y > 0)
+            return (times.reduce((acc, cur) => acc + cur, 0) / times.length).toFixed(2)
+        },
         currentMember() {
             return this.mid ? this.$store.getters.getMemberById(this.mid) : undefined
         },
@@ -52,6 +57,7 @@ export default {
                 return undefined
             }
             var data = this.$store.getters.getAvgTimesById(this.mid)
+            console.log(data)
             var { tslope, equation } = this.getTrendEquation(data)
             this.slope = tslope
             return data.map((v, idx) => equation(idx))
@@ -69,7 +75,7 @@ export default {
             var norm = data.map(xi => ((xi - min) / (max - min)) + 1)
             return this.getTrendEquation(norm).tslope
         },
-        highest() {
+        highestTime() {
             if (!this.mid) {
                 return undefined
             }
