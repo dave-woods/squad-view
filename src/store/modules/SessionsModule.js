@@ -12,6 +12,7 @@ export default {
         (a, b) => a + b
       ) / mem.times.length
     }),
+    getAllAttendancesById: state => id => state.sessions.map(sess => sess.attendees.find(m => m.id === id)),
     getSessions: state => state.sessions
   },
   mutations: {

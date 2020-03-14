@@ -76,10 +76,6 @@ export default {
         text: 'Members',
         to: '/members'
       },
-      {
-        text: 'Caitríona',
-        to: '/members/2'
-      },
 			{
 				text: 'Competition Scores',
 				to: '/scores'

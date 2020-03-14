@@ -1,8 +1,23 @@
 <template>
     <v-container>
-        <h1>Members</h1>
-        <h2 v-if="currentMember">{{ currentMember.name }}</h2>
+        <div v-if="currentMember" style="display: flex">
+            <v-btn icon :disabled="!mid || mid === 1" @click="mid--; fillData()">
+                <v-icon>mdi-chevron-left</v-icon>
+            </v-btn>
+            <v-spacer></v-spacer>
+            <h1>{{ currentMember.name }}</h1>
+            <v-spacer></v-spacer>
+            <v-btn icon :disabled="!mid || mid === members.length" @click="mid++; fillData()">
+                <v-icon>mdi-chevron-right</v-icon>
+            </v-btn>
+        </div>
+        <h1 v-else>Members</h1>
         <line-chart :chart-data="chartData" :options="chartOptions"></line-chart>
+        <ul v-if="currentMember">
+            <li>Trend: {{ normalisedSlope > 0 ? 'Positive' : 'Negtive' }} </li>
+            <li>Consistency: {{ stdDev }}</li>
+            <li>Highest Single Time: {{ highest }}</li>
+        </ul>
     </v-container>
 </template>
 
@@ -18,7 +33,9 @@ export default {
                 maintainAspectRatio: false
             },
             fillUnderLine: true,
-            mid: parseInt(this.id)
+            mid: parseInt(this.id),
+            slope: 0,
+            stdDev: 0
         }
     },
     props: ['id'],
@@ -28,6 +45,42 @@ export default {
         },
         currentMember() {
             return this.mid ? this.$store.getters.getMemberById(this.mid) : undefined
+        },
+        trendLine() {
+            if (!this.mid) {
+                this.slope = 0
+                return undefined
+            }
+            var data = this.$store.getters.getAvgTimesById(this.mid)
+            var { tslope, equation } = this.getTrendEquation(data)
+            this.slope = tslope
+            return data.map((v, idx) => equation(idx))
+        },
+        normalisedSlope() {
+            if (!this.mid) {
+                return 0
+            }
+            var data = this.$store.getters.getAvgTimesById(this.mid).filter(y => y > 0)
+            if (data.length < 2) {
+                return 0
+            }
+            var min = Math.min(...data)
+            var max = Math.max(...data)
+            var norm = data.map(xi => ((xi - min) / (max - min)) + 1)
+            return this.getTrendEquation(norm).tslope
+        },
+        highest() {
+            if (!this.mid) {
+                return undefined
+            }
+            var times = this.$store.getters.getAllAttendancesById(this.mid).filter(a => a).map(a => a.times)
+            return times.reduce((acc, cur) => {
+                if (cur.length === 0) {
+                    return acc
+                } else {
+                    return Math.max(...cur, acc)
+                }
+            }, 0)
         }
     },
     mounted() {
@@ -42,18 +95,56 @@ export default {
             this.chartData = {
                 labels: sessions.map(s => s.date),
                 datasets: this.currentMember ? [{
-                    label: this.currentMember.name,
+                    label: this.currentMember.name.split(' ')[0],
                     fill: this.fillUnderLine,
                     backgroundColor: this.rainbow(this.members.length, this.currentMember.id-1) + '44',
-                    data: this.$store.getters.getAvgTimesById(this.currentMember.id).map(t => t === 0 ? null : Math.round(t*100)/100)
+                    data: this.$store.getters.getAvgTimesById(this.currentMember.id).map(t => t === 0 ? null : Math.round(t * 10000) / 10000)
+                },{
+                    label: 'Trend',
+                    fill: false,
+                    data: this.trendLine?.map((d, idx) => idx === 0 || idx === this.trendLine.length - 1 ? Math.round(d * 10000) / 10000 : undefined),
+                    pointStyle: 'triangle'
                 }] : this.members.map(m => {
                     return {
                         label: m.name,
                         fill: this.fillUnderLine,
                         backgroundColor: this.rainbow(this.members.length, m.id-1) + '44',
-                        data: this.$store.getters.getAvgTimesById(m.id).map(t => t === 0 ? null : Math.round(t*100)/100)
+                        data: this.$store.getters.getAvgTimesById(m.id).map(t => t === 0 ? null : Math.round(t * 10000) / 10000)
                     }
                 })
+            }
+        },
+        getTrendEquation(data) {
+            var yData = data.filter(y => y > 0)
+            if (yData.length === 1) {
+                console.log(yData)
+                return {
+                    tslope: 0,
+                    equation: x => (yData[0])
+                }
+            }
+            var xData = data.map((y, idx) => y > 0 ? idx : -1).filter(x => x >= 0)
+            var n = xData.length
+            var xSum = 0
+            var ySum = 0
+            var xySum = 0
+            var xxSum = 0
+            for (var i = 0; i < n; i++) {
+                xySum += xData[i]*yData[i]
+                xxSum += xData[i]*xData[i]
+                xSum += xData[i]
+                ySum += yData[i]
+            }
+            var t1 = n * xySum
+            var t2 = xSum * ySum
+            var t3 = n * xxSum
+            var t4 = xSum * xSum
+            var tslope = (t1 - t2) / (t3 - t4)
+            var t5 = tslope * xSum
+            var yIntercept = (ySum - t5) / n
+            return {
+                tslope,
+                equation: x => ((tslope * x) + yIntercept)
             }
         },
         rainbow(numOfSteps, step) {
