@@ -1,6 +1,7 @@
 <template>
     <v-container>
         <h1>Members</h1>
+        <h2 v-if="currentMember">{{ currentMember.name }}</h2>
         <line-chart :chart-data="chartData" :options="chartOptions"></line-chart>
     </v-container>
 </template>
@@ -13,9 +14,20 @@ export default {
             chartData: {},
             chartOptions: {
                 spanGaps: true,
-                responsive: true
+                responsive: true,
+                maintainAspectRatio: false
             },
-            fillUnderLine: true
+            fillUnderLine: true,
+            mid: parseInt(this.id)
+        }
+    },
+    props: ['id'],
+    computed: {
+        members() {
+            return this.$store.getters.getAllMembers
+        },
+        currentMember() {
+            return this.mid ? this.$store.getters.getMemberById(this.mid) : undefined
         }
     },
     mounted() {
@@ -27,14 +39,18 @@ export default {
     methods: {
         fillData() {
             var sessions = this.$store.getters.getSessions
-            var members = this.$store.getters.getAllMembers
             this.chartData = {
                 labels: sessions.map(s => s.date),
-                datasets: members.map(m => {
+                datasets: this.currentMember ? [{
+                    label: this.currentMember.name,
+                    fill: this.fillUnderLine,
+                    backgroundColor: this.rainbow(this.members.length, this.currentMember.id-1) + '44',
+                    data: this.$store.getters.getAvgTimesById(this.currentMember.id).map(t => t === 0 ? null : Math.round(t*100)/100)
+                }] : this.members.map(m => {
                     return {
                         label: m.name,
                         fill: this.fillUnderLine,
-                        backgroundColor: this.rainbow(members.length, m.id-1) + '44',
+                        backgroundColor: this.rainbow(this.members.length, m.id-1) + '44',
                         data: this.$store.getters.getAvgTimesById(m.id).map(t => t === 0 ? null : Math.round(t*100)/100)
                     }
                 })

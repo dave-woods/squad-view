@@ -57,7 +57,7 @@ export default {
   data: () => ({
     links: [
       {
-        text: 'Time of Flight',
+        text: 'Times of Flight',
         to: '/graph',
       },
 			{
@@ -75,6 +75,10 @@ export default {
       {
         text: 'Members',
         to: '/members'
+      },
+      {
+        text: 'Caitríona',
+        to: '/members/2'
       },
 			{
 				text: 'Competition Scores',

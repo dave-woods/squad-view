@@ -34,6 +34,12 @@ const routes = [
     component: () => import('../views/Members.vue')
   },
   {
+    path: '/members/:id',
+    props: true,
+    name: 'member',
+    component: () => import('../views/Members.vue')
+  },
+  {
     path: '*',
     name: '404',
     component: () => import('../components/404.vue')
