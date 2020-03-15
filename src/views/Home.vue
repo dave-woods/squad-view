@@ -58,7 +58,7 @@ export default {
     links: [
       {
         text: 'Times of Flight',
-        to: '/graph',
+        to: '/members',
       },
 			{
 				text: 'About',
@@ -74,7 +74,7 @@ export default {
       },
       {
         text: 'Members',
-        to: '/members'
+        to: '/graph'
       },
 			{
 				text: 'Competition Scores',

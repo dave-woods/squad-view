@@ -1,0 +1,9 @@
+- Fully switch /graph and /members, rather than just switching the routes in Home.vue
+- Ctrl+click on member cards to compare
+- Add in rest of data from squad book (goals/conditioning)
+- Add in last year's data
+- Show data for specified time ranges
+- Clicking on an individual session should show a page with all the data for that session, including chart(?) for times of flight
+- Add competition scores and link them to members
+- Settings page under admin route
+- Add further member data (email? height? weight?)
