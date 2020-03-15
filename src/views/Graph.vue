@@ -32,12 +32,6 @@ export default {
 		memberCards() {
 			return this.showSingleSession ? this.namesAndTimes : this.namesAndTimes.filter(n => n.avgTimes.filter(t => t > 0).length > 1)
 		},
-		members() {
-			return this.$store.getters.getAllMembers.map(m => ({
-				text: m.name,
-				value: m.id
-			}))
-		},
 		numSessions() {
 			return this.$store.getters.getSessions.length
 		}

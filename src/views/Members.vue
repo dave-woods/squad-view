@@ -14,10 +14,10 @@
         <h1 v-else>Members</h1>
         <line-chart :chart-data="chartData" :options="chartOptions" :styles="{marginBottom: '1em'}"></line-chart>
         <ul v-if="currentMember">
-            <li>Trend: {{ slope.toFixed(4) }} || {{ normalisedSlope.toFixed(4) }} </li>
-            <li>Standard deviation: {{ stdDev }}</li>
-            <li>Highest Single Time: {{ highestTime }}</li>
-            <li>Average Time: {{ averageTime}}</li>
+            <li>Personal best: {{ highestTime }}</li>
+            <li>Mean time: {{ overallMeanTime}}</li>
+            <li>{{ trendText }}</li>
+            <li>Deviation: (Standard) {{ stdDev }}, (from trend) {{ trendDev }}</li>
         </ul>
     </v-container>
 </template>
@@ -35,7 +35,9 @@ export default {
             },
             fillUnderLine: true,
             mid: parseInt(this.id),
-            slope: 0
+            slope: 0,
+            correlationStrength: 0,
+            trendLine: []
         }
     },
     props: ['id'],
@@ -43,48 +45,61 @@ export default {
         members() {
             return this.$store.getters.getAllMembers
         },
-        averageTime() {
-            var times = this.$store.getters.getAvgTimesById(this.mid).filter(y => y > 0)
-            return (times.reduce((acc, cur) => acc + cur, 0) / times.length).toFixed(2)
+        overallMeanTime() {
+            return Math.round(this.avgTimesFiltered.reduce((acc, cur) => acc + cur, 0) / this.avgTimesFiltered.length * 10000) / 10000
+        },
+        avgTimes() {
+            return this.$store.getters.getAvgTimesById(this.mid)
+        },
+        avgTimesFiltered() {
+            return this.avgTimes.filter(time => time > 0)
         },
         currentMember() {
             return this.mid ? this.$store.getters.getMemberById(this.mid) : undefined
         },
-        trendLine() {
-            if (!this.mid) {
-                this.slope = 0
-                return undefined
+        trendText () {
+            if (this.slope === 0) {
+                return 'No change'
+            } else {
+                // https://www.statisticshowto.datasciencecentral.com/probability-and-statistics/correlation-coefficient-formula/
+                // https://www.itrcweb.org/gsmc-1/Content/GW%20Stats/5%20Methods%20in%20indiv%20Topics/5%205%20Trend%20Tests.htm
+                var str = ''
+                if (this.correlationStrength < .2) {
+                    str = 'very weak'
+                } else if (this.correlationStrength < .3) {
+                    str = 'weak'
+                } else if (this.correlationStrength < .4) {
+                    str = 'moderate'
+                } else if (this.correlationStrength < .7) {
+                    str = 'strong'
+                } else {
+                    str = 'very strong'
+                }
+                return `Overall ${str} ${this.slope > 0 ? 'increasing' : 'decreasing'} trend (${Math.round(this.correlationStrength * 10000) / 100}%)`
             }
-            var data = this.$store.getters.getAvgTimesById(this.mid)
-            var { tslope, equation } = this.getTrendEquation(data)
-            this.slope = tslope
-            return data.map((v, idx) => equation(idx))
         },
         stdDev() {
-            var data = this.$store.getters.getAvgTimesById(this.mid).filter(y => y > 0)
-            var sqDiffs = data.map(y => {
-                var diff = y - parseFloat(this.averageTime)
-                return diff * diff
-            })
-            return Math.sqrt(sqDiffs.reduce((a, c) => a + c, 0) / sqDiffs.length)
-        },
-        normalisedSlope() {
-            if (!this.mid) {
+            if (this.avgTimesFiltered.length < 2) {
                 return 0
             }
-            var data = this.$store.getters.getAvgTimesById(this.mid).filter(y => y > 0)
+            var sqDiffs = this.avgTimesFiltered.map(y => {
+                var diff = y - this.overallMeanTime
+                return diff * diff
+            })
+            return Math.round(Math.sqrt(sqDiffs.reduce((a, c) => a + c, 0) / sqDiffs.length) * 10000) / 10000
+        },
+        trendDev() {
+            var data = this.avgTimes.map((y, idx) => [y, idx]).filter(y => y[0] > 0)
             if (data.length < 2) {
                 return 0
             }
-            var min = Math.min(...data)
-            var max = Math.max(...data)
-            var norm = data.map(xi => ((xi - min) / (max - min)) + 1)
-            return this.getTrendEquation(norm).tslope
+            var sqDiffs = data.map(([y, idx]) => {
+                var diff = y - this.trendLine[idx]
+                return diff * diff
+            })
+            return Math.round(Math.sqrt(sqDiffs.reduce((a, c) => a + c, 0) / sqDiffs.length) * 10000) / 10000
         },
         highestTime() {
-            if (!this.mid) {
-                return undefined
-            }
             var times = this.$store.getters.getAllAttendancesById(this.mid).filter(a => a).map(a => a.times)
             return times.reduce((acc, cur) => {
                 if (cur.length === 0) {
@@ -103,19 +118,33 @@ export default {
     },
     methods: {
         fillData() {
+            var { trendSlope, pearsons, equation } = this.getTrendEquation(this.avgTimes)
+            this.slope = trendSlope
+            this.correlationStrength = Math.abs(pearsons)
+            this.trendLine = this.avgTimes.map((v, idx) => equation(idx))
             var sessions = this.$store.getters.getSessions
             this.chartData = {
                 labels: sessions.map(s => s.date),
                 datasets: this.currentMember ? [{
                     label: this.currentMember.name.split(' ')[0],
                     fill: this.fillUnderLine,
-                    backgroundColor: this.rainbow(this.members.length, this.currentMember.id-1) + '44',
-                    data: this.$store.getters.getAvgTimesById(this.currentMember.id).map(t => t === 0 ? null : Math.round(t * 10000) / 10000)
+                    backgroundColor: this.rainbow(this.members.length, this.mid-1) + '44',
+                    data: this.$store.getters.getAvgTimesById(this.mid).map(t => t === 0 ? null : Math.round(t * 10000) / 10000),
+                    borderColor: '#00000066',
+                    pointRadius: 5
                 },{
                     label: 'Trend',
-                    fill: false,
-                    data: this.trendLine?.map((d, idx) => idx === 0 || idx === this.trendLine.length - 1 ? Math.round(d * 10000) / 10000 : undefined),
-                    pointStyle: 'triangle'
+                    data: this.trendLine.map(d => Math.round(d * 10000) / 10000),
+                    pointStyle: 'triangle',
+                    backgroundColor: '#FFFFFF00',
+                    borderColor: this.rainbow(this.members.length, this.mid-1) + '44'
+                },{
+                    label: `Mean (${this.overallMeanTime})`,
+                    borderDash: [10, 10],
+                    backgroundColor: '#FFFFFF00',
+                    data: this.avgTimes.map(() => this.overallMeanTime),
+                    pointRadius: 0,
+                    borderColor: '#00000033'
                 }] : this.members.map(m => {
                     return {
                         label: m.name,
@@ -127,10 +156,12 @@ export default {
             }
         },
         getTrendEquation(data) {
+            // https://math.stackexchange.com/questions/204020/what-is-the-equation-used-to-calculate-a-linear-trendline
             var yData = data.filter(y => y > 0)
             if (yData.length === 1) {
                 return {
-                    tslope: 0,
+                    trendSlope: 0,
+                    pearsons: 0,
                     equation: x => (yData[0])
                 }
             }
@@ -140,22 +171,23 @@ export default {
             var ySum = 0
             var xySum = 0
             var xxSum = 0
+            var yySum = 0
             for (var i = 0; i < n; i++) {
                 xySum += xData[i]*yData[i]
                 xxSum += xData[i]*xData[i]
+                yySum += yData[i]*yData[i]
                 xSum += xData[i]
                 ySum += yData[i]
             }
-            var t1 = n * xySum
-            var t2 = xSum * ySum
-            var t3 = n * xxSum
-            var t4 = xSum * xSum
-            var tslope = (t1 - t2) / (t3 - t4)
-            var t5 = tslope * xSum
-            var yIntercept = (ySum - t5) / n
+            var top = (n * xySum) - (xSum * ySum)
+            var bottomLeft = (n * xxSum) - (xSum * xSum)
+            var bottomRight = (n * yySum) - (ySum * ySum)
+            var trendSlope = top / bottomLeft
+            var yIntercept = (ySum - (trendSlope * xSum)) / n
             return {
-                tslope,
-                equation: x => ((tslope * x) + yIntercept)
+                trendSlope,
+                pearsons: Math.round(top / Math.sqrt(bottomLeft * bottomRight) * 10000) / 10000,
+                equation: x => ((trendSlope * x) + yIntercept)
             }
         },
         rainbow(numOfSteps, step) {
