@@ -15,7 +15,7 @@
         <line-chart :chart-data="chartData" :options="chartOptions" :styles="{marginBottom: '1em'}"></line-chart>
         <ul v-if="currentMember">
             <li>Trend: {{ slope.toFixed(4) }} || {{ normalisedSlope.toFixed(4) }} </li>
-            <li>Consistency: {{ stdDev }}</li>
+            <li>Standard deviation: {{ stdDev }}</li>
             <li>Highest Single Time: {{ highestTime }}</li>
             <li>Average Time: {{ averageTime}}</li>
         </ul>
@@ -35,8 +35,7 @@ export default {
             },
             fillUnderLine: true,
             mid: parseInt(this.id),
-            slope: 0,
-            stdDev: 0
+            slope: 0
         }
     },
     props: ['id'],
@@ -57,10 +56,17 @@ export default {
                 return undefined
             }
             var data = this.$store.getters.getAvgTimesById(this.mid)
-            console.log(data)
             var { tslope, equation } = this.getTrendEquation(data)
             this.slope = tslope
             return data.map((v, idx) => equation(idx))
+        },
+        stdDev() {
+            var data = this.$store.getters.getAvgTimesById(this.mid).filter(y => y > 0)
+            var sqDiffs = data.map(y => {
+                var diff = y - parseFloat(this.averageTime)
+                return diff * diff
+            })
+            return Math.sqrt(sqDiffs.reduce((a, c) => a + c, 0) / sqDiffs.length)
         },
         normalisedSlope() {
             if (!this.mid) {
@@ -123,7 +129,6 @@ export default {
         getTrendEquation(data) {
             var yData = data.filter(y => y > 0)
             if (yData.length === 1) {
-                console.log(yData)
                 return {
                     tslope: 0,
                     equation: x => (yData[0])
