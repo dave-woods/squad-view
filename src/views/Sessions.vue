@@ -11,7 +11,6 @@
 					color="white"
 					auto-draw
 					:smooth="1"
-					:line-width="10"
 					class="py-6"
 					type="bar"
 				></v-sparkline>

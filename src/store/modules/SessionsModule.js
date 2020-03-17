@@ -17,7 +17,7 @@ export default {
   },
   mutations: {
     addSession(state, newSession) {
-      state.sessions = [...state.sessions, newSession]
+      state.sessions = [...state.sessions, newSession].sort((a, b) => new Date(a.date) - new Date(b.date))
     },
     updateSession(state, session) {
       var idx = state.sessions.findIndex(s => s.date === session.date)

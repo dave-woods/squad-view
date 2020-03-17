@@ -33,11 +33,11 @@ export default {
                 responsive: true,
                 maintainAspectRatio: false
             },
-            fillUnderLine: true,
             mid: parseInt(this.id),
             slope: 0,
             correlationStrength: 0,
-            trendLine: []
+            trendLine: [],
+            trimEmpty: !!this.id // will be a prop
         }
     },
     props: ['id'],
@@ -49,13 +49,27 @@ export default {
             return Math.round(this.avgTimesFiltered.reduce((acc, cur) => acc + cur, 0) / this.avgTimesFiltered.length * 10000) / 10000
         },
         avgTimes() {
-            return this.$store.getters.getAvgTimesById(this.mid)
+            return this.$store.getters.getAvgTimesById(this.mid).slice(...this.trim)
         },
         avgTimesFiltered() {
             return this.avgTimes.filter(time => time > 0)
         },
         currentMember() {
             return this.mid ? this.$store.getters.getMemberById(this.mid) : undefined
+        },
+        trim() {
+            var tmx = this.$store.getters.getAvgTimesById(this.mid)
+            if (this.trimEmpty) {
+                var b = 0, e = 0;
+                for (var i = 0; i < tmx.length; i++) {
+                    if (tmx[i] !== 0) {
+                        b = b === 0 ? i : b
+                        e = i
+                    }
+                }
+                return [b, e+1]
+            }
+            return [0]
         },
         trendText () {
             if (this.slope === 0) {
@@ -122,14 +136,13 @@ export default {
             this.slope = trendSlope
             this.correlationStrength = Math.abs(pearsons)
             this.trendLine = this.avgTimes.map((v, idx) => equation(idx))
-            var sessions = this.$store.getters.getSessions
+            var sessions = this.$store.getters.getSessions.slice(...this.trim)
             this.chartData = {
                 labels: sessions.map(s => s.date),
                 datasets: this.currentMember ? [{
                     label: this.currentMember.name.split(' ')[0],
-                    fill: this.fillUnderLine,
                     backgroundColor: this.rainbow(this.members.length, this.mid-1) + '44',
-                    data: this.$store.getters.getAvgTimesById(this.mid).map(t => t === 0 ? null : Math.round(t * 10000) / 10000),
+                    data: this.avgTimes.map(t => t === 0 ? null : Math.round(t * 10000) / 10000),
                     borderColor: '#00000066',
                     pointRadius: 5
                 },{
@@ -148,8 +161,8 @@ export default {
                 }] : this.members.map(m => {
                     return {
                         label: m.name,
-                        fill: this.fillUnderLine,
-                        backgroundColor: this.rainbow(this.members.length, m.id-1) + '44',
+                        fill: false,
+                        borderColor: this.rainbow(this.members.length, m.id-1) + '44',
                         data: this.$store.getters.getAvgTimesById(m.id).map(t => t === 0 ? null : Math.round(t * 10000) / 10000)
                     }
                 })

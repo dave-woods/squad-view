@@ -2,8 +2,10 @@
 - Ctrl+click on member cards to compare
 - Add in rest of data from squad book (goals/conditioning)
 - Add in last year's data
-- Show data for specified time ranges
+- Show data for specified time ranges (e.g. "show data for current year only")
 - Clicking on an individual session should show a page with all the data for that session, including chart(?) for times of flight
 - Add competition scores and link them to members
 - Settings page under admin route
 - Add further member data (email? height? weight?)
+- Add unique key for sessions rather than using date (since that can be edited)
+- Setting for where to split one year from the next (e.g. academic year periods)
