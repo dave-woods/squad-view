@@ -1,29 +1,39 @@
 <template>
-    <v-container>
-        <div v-if="currentMember" style="display: flex">
-            <v-btn icon :disabled="!mid || mid === 1" @click="mid--; fillData()">
+    <v-container v-if="currentMember">
+        <div style="display: flex">
+            <v-btn icon :disabled="!mid || mid === 1" @click="selectMember(mid - 1)">
                 <v-icon>mdi-chevron-left</v-icon>
             </v-btn>
             <v-spacer></v-spacer>
             <h1>{{ currentMember.name }}</h1>
             <v-spacer></v-spacer>
-            <v-btn icon :disabled="!mid || mid === members.length" @click="mid++; fillData()">
+            <v-btn icon :disabled="!mid || mid === members.length" @click="selectMember(mid + 1)">
                 <v-icon>mdi-chevron-right</v-icon>
             </v-btn>
         </div>
-        <h1 v-else>Members</h1>
         <line-chart :chart-data="chartData" :options="chartOptions" :styles="{marginBottom: '1em'}"></line-chart>
-        <ul v-if="currentMember">
+        <ul>
             <li>Personal best: {{ highestTime }}</li>
             <li>Mean time: {{ overallMeanTime}}</li>
             <li>{{ trendText }}</li>
             <li>Deviation: (Standard) {{ stdDev }}, (from trend) {{ trendDev }}</li>
         </ul>
     </v-container>
+    <v-container v-else style="position: relative; display: grid; grid-template-columns: 1fr 1fr; grid-gap: 10px">
+		<h1 style="grid-column: 1 / span 2; text-align: center">Members</h1>
+		<v-switch v-model="showSingleSession" label="Show members with only one session" style="position: absolute; bottom: -40px; left: 10px"></v-switch>
+		<member-card
+			v-for="(v, i) in memberCards"
+			:key="`member-card-${i}`"
+			:member="v"
+		>
+		</member-card>
+	</v-container>
 </template>
 
 <script>
 import LineChart from '@/components/LineChart'
+import MemberQuickCard from '../components/MemberQuickCard'
 export default {
     data() {
         return {
@@ -33,14 +43,20 @@ export default {
                 responsive: true,
                 maintainAspectRatio: false
             },
-            mid: parseInt(this.id),
             slope: 0,
+            mid: parseInt(this.id),
             correlationStrength: 0,
             trendLine: [],
-            trimEmpty: !!this.id // will be a prop
+            // below should be props from settings
+			showSingleSession: false,
+            trimEmpty: true
         }
     },
     props: ['id'],
+    components: {
+        'line-chart': LineChart,
+		'member-card': MemberQuickCard
+	},
     computed: {
         members() {
             return this.$store.getters.getAllMembers
@@ -122,16 +138,35 @@ export default {
                     return Math.max(...cur, acc)
                 }
             }, 0)
+        },
+        // originally from /graph
+        namesAndTimes() {
+			return this.$store.getters.getAllMembers.map(m => {
+				return {
+					id: m.id,
+					name: m.name,
+					avgTimes: this.$store.getters.getAvgTimesById(m.id)
+				}
+			})
+		},
+		memberCards() {
+			return this.showSingleSession ? this.namesAndTimes : this.namesAndTimes.filter(n => n.avgTimes.filter(t => t > 0).length > 1)
+		}
+    },
+    watch: {
+        id(val) {
+            this.mid = parseInt(val)
+            this.fillData()
         }
     },
     mounted() {
         this.fillData()
     },
-    components: {
-        'line-chart': LineChart
-    },
     methods: {
         fillData() {
+            if (!this.currentMember) {
+                return
+            }
             var { trendSlope, pearsons, equation } = this.getTrendEquation(this.avgTimes)
             this.slope = trendSlope
             this.correlationStrength = Math.abs(pearsons)
@@ -139,7 +174,7 @@ export default {
             var sessions = this.$store.getters.getSessions.slice(...this.trim)
             this.chartData = {
                 labels: sessions.map(s => s.date),
-                datasets: this.currentMember ? [{
+                datasets: [{
                     label: this.currentMember.name.split(' ')[0],
                     backgroundColor: this.rainbow(this.members.length, this.mid-1) + '44',
                     data: this.avgTimes.map(t => t === 0 ? null : Math.round(t * 10000) / 10000),
@@ -158,14 +193,7 @@ export default {
                     data: this.avgTimes.map(() => this.overallMeanTime),
                     pointRadius: 0,
                     borderColor: '#00000033'
-                }] : this.members.map(m => {
-                    return {
-                        label: m.name,
-                        fill: false,
-                        borderColor: this.rainbow(this.members.length, m.id-1) + '44',
-                        data: this.$store.getters.getAvgTimesById(m.id).map(t => t === 0 ? null : Math.round(t * 10000) / 10000)
-                    }
-                })
+                }]
             }
         },
         getTrendEquation(data) {
@@ -203,6 +231,9 @@ export default {
                 equation: x => ((trendSlope * x) + yIntercept)
             }
         },
+        selectMember(id) {
+			this.$router.push(`/members/${id}`)
+		},
         rainbow(numOfSteps, step) {
             /* from https://stackoverflow.com/questions/1484506/random-color-generator */
             // This function generates vibrant, "evenly spaced" colours (i.e. no clustering). This is ideal for creating easily distinguishable vibrant markers in Google Maps and other apps.
