@@ -3,8 +3,8 @@ export default {
     sessions: []
   },
   getters: {
-    getAvgTimesById: state => id => state.sessions.map(sess => {
-      const mem = sess.attendees.find(m => m.id === id)
+    getAvgTimesById: (state, getters) => id => getters.getSessions.map(s => {
+      const mem = s.attendees.find(m => m.id === id)
       if (!mem || mem.times.length === 0) {
         return 0
       }
@@ -12,8 +12,12 @@ export default {
         (a, b) => a + b
       ) / mem.times.length
     }),
-    getAllAttendancesById: state => id => state.sessions.map(sess => sess.attendees.find(m => m.id === id)),
-    getSessions: state => state.sessions
+    getAllAttendancesById: (state, getters) => id => getters.getSessions.map(s => s.attendees.find(m => m.id === id)),
+    getSessions: (state, getters) => state.sessions.filter(s => {
+      var d = new Date(s.date)
+      return d >= getters.getStartDate && d <= getters.getEndDate
+    }),
+    getDateRange: state => [state.sessions[0]?.date, state.sessions[state.sessions.length-1]?.date]
   },
   mutations: {
     addSession(state, newSession) {

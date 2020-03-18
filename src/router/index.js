@@ -40,6 +40,11 @@ const routes = [
     component: () => import('../views/Members.vue')
   },
   {
+    path: '/temp',
+    name: 'temp',
+    component: () => import('../views/Temp.vue')
+  },
+  {
     path: '*',
     name: '404',
     component: () => import('../components/404.vue')

@@ -21,7 +21,6 @@
     </v-container>
     <v-container v-else style="position: relative; display: grid; grid-template-columns: 1fr 1fr; grid-gap: 10px">
 		<h1 style="grid-column: 1 / span 2; text-align: center">Members</h1>
-		<v-switch v-model="showSingleSession" label="Show members with only one session" style="position: absolute; bottom: -40px; left: 10px"></v-switch>
 		<member-card
 			v-for="(v, i) in memberCards"
 			:key="`member-card-${i}`"
@@ -47,9 +46,7 @@ export default {
             mid: parseInt(this.id),
             correlationStrength: 0,
             trendLine: [],
-            // below should be props from settings
-			showSingleSession: false,
-            trimEmpty: true
+            unsubscribeStore: null
         }
     },
     props: ['id'],
@@ -58,6 +55,13 @@ export default {
 		'member-card': MemberQuickCard
 	},
     computed: {
+        showSingleSession() {
+            return this.$store.state.settings.showSingleSession
+        },
+        trimEmpty() {
+            return this.$store.state.settings.trimEmpty
+        },
+        // use mapState for the above?
         members() {
             return this.$store.getters.getAllMembers
         },
@@ -159,8 +163,18 @@ export default {
             this.fillData()
         }
     },
+    created() {
+        this.unsubscribeStore = this.$store.subscribe(({ type }) => {
+            if (['setTrimEmpty', 'setStartDate', 'setEndDate'].includes(type)) {
+                this.fillData()
+            }
+        })
+    },
     mounted() {
         this.fillData()
+    },
+    beforeDestroy() {
+        this.unsubscribeStore()
     },
     methods: {
         fillData() {

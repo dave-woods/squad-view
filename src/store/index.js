@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 
 import SessionsModule from './modules/SessionsModule'
 import MembersModule from './modules/MembersModule'
+import SettingsModule from './modules/SettingsModule'
 
 Vue.use(Vuex)
 
@@ -15,6 +16,7 @@ export default new Vuex.Store({
   },
   modules: {
     sessions: SessionsModule,
-    members: MembersModule
+    members: MembersModule,
+    settings: SettingsModule
   }
 })

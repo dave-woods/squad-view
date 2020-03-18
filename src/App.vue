@@ -34,33 +34,46 @@
         text
 				to="/members"
       >
-        <span class="mr-2">Members</span>
+        <span>Members</span>
       </v-btn>
       <v-btn
         text
-				to="/admin"
+        @click="drawer = !drawer"
       >
-        <span class="mr-2">Admin</span>
-        <v-icon>mdi-settings</v-icon>
+        <span>
+
+        <v-icon>mdi-tune</v-icon>
+        </span>
       </v-btn>
     </v-app-bar>
 
     <v-content>
 			<router-view></router-view>
     </v-content>
+    <settings v-model="drawer"></settings>
   </v-app>
 </template>
 
 <script>
 import { requestsMixin } from '@/mixins/requestsMixin'
+import Settings from '@/components/Settings'
 export default {
   name: 'App',
+  data() {
+    return {
+      drawer: false
+    }
+  },
+  components: {
+    'settings': Settings
+  },
 	mixins: [requestsMixin],
 	methods: {
 		async loadStateFromDB() {
-			const { data } = await this.getStateFromDB()
+			const data = await this.getStateFromDB()
 			this.$store.dispatch('updateMembersState', data.members)
 			this.$store.dispatch('updateSessionsState', data.sessions)
+			this.$store.dispatch('updateSettingsState', data.settings)
 		},
 		async saveStateToDB() {
 			await this.setStateToDB(this.$store.state)

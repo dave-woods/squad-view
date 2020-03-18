@@ -64,7 +64,6 @@
 
 <script>
 import NewSessionForm from '@/components/NewSessionForm'
-import { setTimeout } from 'timers';
 export default {
 	data() {
 		return {
@@ -83,10 +82,10 @@ export default {
 			return this.sessionList.map(s => s.attendees.length)
 		},
 		fromDate() {
-			return this.dateToDateString(this.sessionList[0].date)
+			return this.dateToDateString(this.sessionList[0]?.date)
 		},
 		toDate() {
-			return this.dateToDateString(this.sessionList[this.sessionList.length - 1].date)
+			return this.dateToDateString(this.sessionList[this.sessionList.length - 1]?.date)
 		}
 	},
 	methods: {
@@ -94,11 +93,13 @@ export default {
 			return this.$store.getters.getMemberById(id)
 		},
 		dateToDateString(d) {
-			return new Date(d).toLocaleDateString('en-IE', {
-				day: 'numeric',
-				month: 'long',
-				year: 'numeric'
-			})
+			if (d) { 
+				return new Date(d).toLocaleDateString('en-IE', {
+					day: 'numeric',
+					month: 'long',
+					year: 'numeric'
+				})
+			}
 		},
 		editSession(session) {
 			this.displayForm = true

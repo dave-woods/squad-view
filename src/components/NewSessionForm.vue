@@ -5,27 +5,7 @@
 			<v-form class="pa-2" v-model="formValid" ref="form">
 				<v-window v-model="formStep">
 					<v-window-item :value="1">
-						<v-menu
-							v-model="datePopout"
-							:close-on-content-click="false"
-							transition="scale-transition"
-       				offset-y
-       				min-width="290px"
-						>
-							<template v-slot:activator="{ on }">
-	      		   	<v-text-field
-	      		   	  v-model="formDate"
-	      		   	  label="Session date"
-	      		   	  prepend-icon="mdi-calendar"
-	      		   	  readonly
-	      		   	  v-on="on"
-        		 		></v-text-field>
-       				</template>
-       				<v-date-picker
-								v-model="formDate"
-								@input="datePopout=false"
-							></v-date-picker>
-						</v-menu>
+						<date-picker v-model="formDate" label="Session date"></date-picker>
 						<v-text-field
 							v-model="formSubtitle"
 							label="Squad subtitle"
@@ -125,8 +105,12 @@
 
 <script>
 import { requestsMixin } from '@/mixins/requestsMixin'
+import DatePicker from '@/components/DatePicker'
 export default {
 	mixins: [requestsMixin],
+	components: {
+		'date-picker': DatePicker
+	},
 	data() {
 		return {
 			datePopout: false,
