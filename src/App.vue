@@ -32,13 +32,22 @@
 
       <v-btn
         text
+				to="/sessions"
+        tile
+      >
+        <span>Sessions</span>
+      </v-btn>
+      <v-btn
+        text
 				to="/members"
+        tile
       >
         <span>Members</span>
       </v-btn>
       <v-btn
         text
         @click="drawer = !drawer"
+        tile
       >
         <span>
 
@@ -53,6 +62,14 @@
     <settings v-model="drawer"></settings>
   </v-app>
 </template>
+
+<style lang="sass" scoped>
+.v-btn--active
+  &::before
+    opacity: 0
+  &:hover::before
+    opacity: 0.08
+</style>
 
 <script>
 import { requestsMixin } from '@/mixins/requestsMixin'

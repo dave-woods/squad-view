@@ -80,10 +80,10 @@ export default {
         trim() {
             var tmx = this.$store.getters.getAvgTimesById(this.mid)
             if (this.trimEmpty) {
-                var b = 0, e = 0;
+                var b = -1, e = -1;
                 for (var i = 0; i < tmx.length; i++) {
                     if (tmx[i] !== 0) {
-                        b = b === 0 ? i : b
+                        b = b === -1 ? i : b
                         e = i
                     }
                 }
