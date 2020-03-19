@@ -7,10 +7,15 @@
         :value="value"
         @input="drawer"
     >
-        <v-container style="display: flex" class="px-4">
-            <span class="title">Settings</span>
-            <v-spacer></v-spacer>
-            <v-btn icon @click="drawer(false)"><v-icon>mdi-close</v-icon></v-btn>
+        <v-container class="primary white--text">
+            <v-row class="px-4">
+                <v-col>
+                    <span class="title">Settings</span>
+                </v-col>
+                <v-col cols="auto">
+                    <v-btn icon tile dark @click="drawer(false)"><v-icon>mdi-close</v-icon></v-btn>
+                </v-col>
+            </v-row>
         </v-container>
         <v-divider></v-divider>
         <v-list class="pa-4">
@@ -36,6 +41,19 @@
                 <v-list-item-action>
                     <v-checkbox
                         v-model="trimEmptyModel"
+                    ></v-checkbox>
+                </v-list-item-action>
+            </v-list-item>
+            <v-divider></v-divider>
+            <v-list-item>
+                <v-list-item-content>
+                    <v-list-item-title>
+                        Editing sessions allowed
+                    </v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action>
+                    <v-checkbox
+                        v-model="editSessionsModel"
                     ></v-checkbox>
                 </v-list-item-action>
             </v-list-item>
@@ -71,6 +89,7 @@ export default {
         ...mapState({
             showSingleSession: state => state.settings.showSingleSession,
             trimEmpty: state => state.settings.trimEmpty,
+            editSessions: state => state.settings.editSessions,
             startDate: state => new Date(state.settings.startDate).toISOString().substr(0, 10),
             endDate: state => new Date(state.settings.endDate).toISOString().substr(0, 10)
         }),
@@ -91,6 +110,14 @@ export default {
             },
             set(value) {
                 this.$store.dispatch('setTrimEmpty', value)
+            }
+        },
+        editSessionsModel: {
+            get() {
+                return this.editSessions
+            },
+            set(value) {
+                this.$store.dispatch('setEditSessions', value)
             }
         },
         startDateModel: {

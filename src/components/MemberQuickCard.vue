@@ -2,6 +2,7 @@
 	<v-card
 		style="display: grid; grid-template-columns: 1fr 2fr"
 		@click="selectMember()"
+		hover
 	>
 		<div style="display: flex; flex-direction: column; justify-content: center; align-items: center">
 			<v-card-title>{{ member.name.split(' ')[0] }}</v-card-title>
@@ -14,7 +15,7 @@
 			:line-width="5"
 			:smooth="10"
 			stroke-linecap="round"
-			:gradient="gradients.moss"
+			:gradient="gradient"
 			gradient-direction="left"
 			:padding="20"
 			:height="150"
@@ -29,6 +30,7 @@
 export default {
 	data() {
 		return {
+			gradient: [this.$vuetify.theme.themes.light.primary, this.$vuetify.theme.themes.light.accent],
 			gradients: {
 				titanium: ['#283048', '#859398'],
 				opa: ['#3D7EAA', '#FFE47A'],

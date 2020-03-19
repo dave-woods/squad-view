@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app style="background: #fcfcf7">
     <v-app-bar
       app
       color="primary"
@@ -29,31 +29,58 @@
 			</router-link>
 
       <v-spacer></v-spacer>
-
-      <v-btn
-        text
-				to="/sessions"
-        tile
-      >
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            text
+            to="/graph"
+            tile
+            v-on="on"
+          >
+            <v-icon>mdi-chart-line</v-icon>
+          </v-btn>
+        </template>
+        <span>Time of Flight</span>
+      </v-tooltip>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            text
+            to="/sessions"
+            tile
+            v-on="on"
+          >
+            <v-icon>mdi-calendar-text</v-icon>
+          </v-btn>
+        </template>
         <span>Sessions</span>
-      </v-btn>
-      <v-btn
-        text
-				to="/members"
-        tile
-      >
+      </v-tooltip>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            text
+            to="/members"
+            tile
+            v-on="on"
+          >
+            <v-icon>mdi-account-group</v-icon>
+          </v-btn>
+        </template>
         <span>Members</span>
-      </v-btn>
-      <v-btn
-        text
-        @click="drawer = !drawer"
-        tile
-      >
-        <span>
-
-        <v-icon>mdi-tune</v-icon>
-        </span>
-      </v-btn>
+      </v-tooltip>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            text
+            @click="drawer = !drawer"
+            tile
+            v-on="on"
+          >
+            <v-icon>mdi-tune</v-icon>
+          </v-btn>
+        </template>
+        <span>Settings</span>
+      </v-tooltip>
     </v-app-bar>
 
     <v-content>

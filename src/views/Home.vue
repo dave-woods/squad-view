@@ -20,7 +20,7 @@
         <p class="subheading font-weight-regular">
           The code for this project is open source,
           <br>and is hosted on
-          <a href="https://github.com/dave-woods/squad-view" target="_blank">GitHub.</a>
+          <a href="https://github.com/dave-woods/squad-view" target="_blank">GitHub</a>.
         </p>
       </v-flex>
 

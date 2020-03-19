@@ -5,7 +5,7 @@
                 <v-icon>mdi-chevron-left</v-icon>
             </v-btn>
             <v-spacer></v-spacer>
-            <h1>{{ currentMember.name }}</h1>
+            <h1 class="display-1 font-weight-bold">{{ currentMember.name }}</h1>
             <v-spacer></v-spacer>
             <v-btn icon :disabled="!mid || mid === members.length" @click="selectMember(mid + 1)">
                 <v-icon>mdi-chevron-right</v-icon>
@@ -20,7 +20,7 @@
         </ul>
     </v-container>
     <v-container v-else style="position: relative; display: grid; grid-template-columns: 1fr 1fr; grid-gap: 10px">
-		<h1 style="grid-column: 1 / span 2; text-align: center">Members</h1>
+		<h1 style="grid-column: 1 / span 2; text-align: center" class="display-1 font-weight-bold">Members</h1>
 		<member-card
 			v-for="(v, i) in memberCards"
 			:key="`member-card-${i}`"

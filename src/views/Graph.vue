@@ -1,6 +1,10 @@
 <template>
 	<v-container>
-        <h1>Time of Flight</h1>
+		<v-row>
+			<v-col cols="12">
+        		<h1 class="display-1" style="text-align: center">Time of Flight</h1>
+			</v-col>
+		</v-row>
         <line-chart :chart-data="chartData" :options="chartOptions"></line-chart>
     </v-container>
 </template>

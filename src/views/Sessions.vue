@@ -1,6 +1,6 @@
 <template>
 	<v-container>
-		<v-card elevation="0" class="mb-6" style="position: relative" color="#134654" dark>
+		<v-card elevation="0" class="mb-6" style="position: relative" color="primary" dark>
 			<v-card-title>Sessions</v-card-title>
 			<v-card-subtitle>
 				Listing {{ sessionList.length }} squad sessions from {{ fromDate }} to {{ toDate }}
@@ -15,7 +15,7 @@
 					type="bar"
 				></v-sparkline>
 			</v-card-text>
-			<v-dialog max-width="800px" v-model="displayForm" @input="v => v || this.$refs.nsform.resetForm()">
+			<v-dialog persistent max-width="800px" v-model="displayForm" @input="v => v || this.$refs.nsform.resetForm()">
 				<template v-slot:activator="{ on }">
 					<v-btn
 						v-on="on"
@@ -27,7 +27,7 @@
 						title="Add new session"
 					>
 						<v-icon
-							color="#134654"
+							color="primary"
 							large
 						>mdi-plus</v-icon>
 					</v-btn>
@@ -36,9 +36,9 @@
 			</v-dialog>
 		</v-card>
 		<v-timeline>
-			<v-timeline-item fill-dot v-for="session in reversedSessionList" :key="session.date" color="#3C7364">
+			<v-timeline-item fill-dot v-for="session in reversedSessionList" :key="session.date" color="accent">
 				<template v-slot:opposite>
-					<span class="headline font-weight-bold">{{ dateToDateString(session.date) }}</span>
+					<span class="display-1 accent--text" style="opacity: 0.6">{{ dateToDateString(session.date) }}</span>
 				</template>
 				<v-card>
 					<v-card-title>"{{ session.subtitle || 'Squad' }}"</v-card-title>
@@ -67,11 +67,13 @@ import NewSessionForm from '@/components/NewSessionForm'
 export default {
 	data() {
 		return {
-			displayForm: false,
-			editsAllowed: true
+			displayForm: false
 		}
 	},
 	computed: {
+		editsAllowed() {
+			return this.$store.state.settings.editSessions
+		},
 		sessionList() {
 			return this.$store.getters.getSessions
 		},
