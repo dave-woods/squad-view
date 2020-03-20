@@ -21,6 +21,8 @@
             <v-tabs-slider color="primary lighten-3"></v-tabs-slider>
             <v-tab>Time of Flight</v-tab>
             <v-tab>Competitions</v-tab>
+            <v-tab>Session Goals</v-tab>
+            <v-tab>...</v-tab>
         </v-tabs>
         <v-tabs-items v-model="currentTab">
             <v-tab-item>
@@ -88,6 +90,12 @@
             </v-tab-item>
             <v-tab-item>
                 <h1>Comp stats</h1>
+            </v-tab-item>
+            <v-tab-item>
+                <h1>Session goals</h1>
+            </v-tab-item>
+            <v-tab-item>
+                <h1>Notes</h1>
             </v-tab-item>
         </v-tabs-items>
     </v-container>

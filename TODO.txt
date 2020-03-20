@@ -10,3 +10,4 @@
 - Add unique key for sessions rather than using date (since that can be edited); should stop inserting sessions by date and move sorting to elsewhere
 - Setting for where to split one year from the next (e.g. academic year periods)
 - Refactor into smaller parts where possible (e.g. components and mixins)
+- Make stats block(s?) into a component, and put all stats methods into a mixin

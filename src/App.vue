@@ -6,29 +6,46 @@
       dark
 			style="background: linear-gradient(to right, #134E5E, #71B280)"
     >
-			<router-link to="/">
-      <div class="d-flex align-center">
-        <v-img
-          alt="Logo"
-          class="shrink mr-2"
-          contain
-          :src="require('./assets/logo.png')"
-          transition="scale-transition"
-          width="40"
-        />
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <router-link to="/">
+            <div class="d-flex align-center" v-on="on">
+              <v-img
+                alt="Logo"
+                class="shrink mr-2"
+                contain
+                :src="require('./assets/logo.png')"
+                transition="scale-transition"
+                width="40"
+              />
 
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          :src="require('./assets/app-name.png')"
-          width="100"
-        />
-      </div>
-			</router-link>
-
+              <v-img
+                alt="Vuetify Name"
+                class="shrink mt-1 hidden-sm-and-down"
+                contain
+                min-width="100"
+                :src="require('./assets/app-name.png')"
+                width="100"
+              />
+            </div>
+          </router-link>
+        </template>
+        <span>Home</span>
+      </v-tooltip>
       <v-spacer></v-spacer>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            text
+            to="/competitions"
+            tile
+            v-on="on"
+          >
+            <v-icon>mdi-trophy-award</v-icon>
+          </v-btn>
+        </template>
+        <span>Competitions</span>
+      </v-tooltip>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn
