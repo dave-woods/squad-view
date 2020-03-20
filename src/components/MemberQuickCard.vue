@@ -1,9 +1,5 @@
 <template>
-	<v-card
-		style="display: grid; grid-template-columns: 1fr 2fr"
-		@click="selectMember()"
-		hover
-	>
+	<v-card style="display: grid; grid-template-columns: 1fr 2fr; height: 100%" @click="selectMember()" hover>
 		<div style="display: flex; flex-direction: column; justify-content: center; align-items: center">
 			<v-card-title>{{ member.name.split(' ')[0] }}</v-card-title>
 			<v-card-subtitle>{{ `${avgTimes.length} sessions` }}</v-card-subtitle>
@@ -23,6 +19,11 @@
 		<v-card-text v-else style="display: flex; justify-content: center; align-items: center">
 			More data needed...
 		</v-card-text>
+		<!-- <v-fade-transition>
+			<v-overlay v-if="hover" absolute color="primary">
+				<v-btn @click="selectMember()" color="primary">See more info</v-btn>
+			</v-overlay>
+		</v-fade-transition> -->
 	</v-card>
 </template>
 
@@ -46,7 +47,8 @@ export default {
 	},
 	methods: {
 		selectMember() {
-			this.$router.push(`/members/${this.member.id}`)
+			// this.$router.push(`/members/${this.member.id}`)
+			this.$emit('select-member', this.member.id)
 		}
 	}
 }

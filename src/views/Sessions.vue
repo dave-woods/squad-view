@@ -32,7 +32,7 @@
 						>mdi-plus</v-icon>
 					</v-btn>
 				</template>
-				<new-session-form ref="nsform" @close-form="displayForm = false"></new-session-form>
+				<new-session-form ref="nsform" @close-form="displayForm = false; snackbar = true"></new-session-form>
 			</v-dialog>
 		</v-card>
 		<v-timeline>
@@ -54,6 +54,7 @@
 				</v-card>
 			</v-timeline-item>
 		</v-timeline>
+		<v-snackbar v-model="snackbar" :timeout="1500">Session saved<v-btn text color="accent" @click="snackbar = false">Close</v-btn></v-snackbar>
 	</v-container>
 </template>
 
@@ -67,7 +68,8 @@ import NewSessionForm from '@/components/NewSessionForm'
 export default {
 	data() {
 		return {
-			displayForm: false
+			displayForm: false,
+			snackbar: false
 		}
 	},
 	computed: {

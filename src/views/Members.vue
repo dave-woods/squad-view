@@ -1,32 +1,111 @@
 <template>
     <v-container v-if="currentMember">
-        <div style="display: flex">
-            <v-btn icon :disabled="!mid || mid === 1" @click="selectMember(mid - 1)">
-                <v-icon>mdi-chevron-left</v-icon>
-            </v-btn>
+        <v-row>
+            <v-col cols="auto">
+                <v-btn icon :disabled="!mid || mid === 1" @click="selectMember(mid - 1)">
+                    <v-icon>mdi-chevron-left</v-icon>
+                </v-btn>
+            </v-col>
             <v-spacer></v-spacer>
-            <h1 class="display-1 font-weight-bold">{{ currentMember.name }}</h1>
+            <v-col cols="auto">
+                <h1 class="display-1 font-weight-bold">{{ currentMember.name }}</h1>
+            </v-col>
             <v-spacer></v-spacer>
-            <v-btn icon :disabled="!mid || mid === members.length" @click="selectMember(mid + 1)">
-                <v-icon>mdi-chevron-right</v-icon>
-            </v-btn>
-        </div>
-        <line-chart :chart-data="chartData" :options="chartOptions" :styles="{marginBottom: '1em'}"></line-chart>
-        <ul>
-            <li>Personal best: {{ highestTime }}</li>
-            <li>Mean time: {{ overallMeanTime}}</li>
-            <li>{{ trendText }}</li>
-            <li>Deviation: (Standard) {{ stdDev }}, (from trend) {{ trendDev }}</li>
-        </ul>
+            <v-col cols="auto">
+                <v-btn icon :disabled="!mid || mid === members.length" @click="selectMember(mid + 1)">
+                    <v-icon>mdi-chevron-right</v-icon>
+                </v-btn>
+            </v-col>
+        </v-row>
+        <v-tabs v-model="currentTab" grow dark background-color="primary">
+            <v-tabs-slider color="primary lighten-3"></v-tabs-slider>
+            <v-tab>Time of Flight</v-tab>
+            <v-tab>Competitions</v-tab>
+        </v-tabs>
+        <v-tabs-items v-model="currentTab">
+            <v-tab-item>
+                <v-card flat class="mx-auto px-4">
+                    <v-card-title class="pb-0">Stats for {{ currentMember.name.split(' ')[0] }}</v-card-title>
+                </v-card>
+                <line-chart :chart-data="chartData" :options="chartOptions" :styles="{marginBottom: '1em'}"></line-chart>
+                <v-card flat class="mx-auto px-4">
+                    <v-list light>
+                        <v-list-item>
+                            <v-list-item-content>
+                                Number of sessions
+                            </v-list-item-content>
+                            <v-list-item-content>
+                                {{ avgTimesFiltered.length }}
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-divider></v-divider>
+                        <v-list-item>
+                            <v-list-item-content>
+                                Personal best time
+                            </v-list-item-content>
+                            <v-list-item-content>
+                                {{ highestTime }}
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-divider></v-divider>
+                        <v-list-item>
+                            <v-list-item-content>
+                                Mean time
+                            </v-list-item-content>
+                            <v-list-item-content>
+                                {{ overallMeanTime }}
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-divider></v-divider>
+                        <v-list-item>
+                            <v-list-item-content>
+                                Overall trend
+                            </v-list-item-content>
+                            <v-list-item-content>
+                                {{ trendText }}
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-divider></v-divider>
+                        <v-list-item>
+                            <v-list-item-content>
+                                Deviation from mean
+                            </v-list-item-content>
+                            <v-list-item-content>
+                                {{ stdDev }}
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-divider></v-divider>
+                        <v-list-item>
+                            <v-list-item-content>
+                                Deviation from trend
+                            </v-list-item-content>
+                            <v-list-item-content>
+                                {{ trendDev }}
+                            </v-list-item-content>
+                        </v-list-item>
+                    </v-list>
+                </v-card>
+            </v-tab-item>
+            <v-tab-item>
+                <h1>Comp stats</h1>
+            </v-tab-item>
+        </v-tabs-items>
     </v-container>
-    <v-container v-else style="position: relative; display: grid; grid-template-columns: 1fr 1fr; grid-gap: 10px">
-		<h1 style="grid-column: 1 / span 2; text-align: center" class="display-1 font-weight-bold">Members</h1>
-		<member-card
-			v-for="(v, i) in memberCards"
-			:key="`member-card-${i}`"
-			:member="v"
-		>
-		</member-card>
+    <v-container v-else >
+        <v-row>
+            <v-col cols="12">
+		        <h1 style="text-align: center" class="display-1 font-weight-bold">Members</h1>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col
+                cols="6"
+                v-for="(m, i) in memberCards"
+                :key="`member-card-${i}`"
+            >
+		        <member-card :member="m" @select-member="selectMember"></member-card>
+            </v-col>
+        </v-row>
 	</v-container>
 </template>
 
@@ -43,6 +122,7 @@ export default {
                 responsive: true,
                 maintainAspectRatio: false
             },
+            currentTab: null,
             slope: 0,
             mid: parseInt(this.id),
             correlationStrength: 0,
@@ -101,17 +181,17 @@ export default {
                 // https://www.itrcweb.org/gsmc-1/Content/GW%20Stats/5%20Methods%20in%20indiv%20Topics/5%205%20Trend%20Tests.htm
                 var str = ''
                 if (this.correlationStrength < .2) {
-                    str = 'very weak'
+                    str = 'Very weakly'
                 } else if (this.correlationStrength < .3) {
-                    str = 'weak'
+                    str = 'Weakly'
                 } else if (this.correlationStrength < .4) {
-                    str = 'moderate'
+                    str = 'Moderately'
                 } else if (this.correlationStrength < .7) {
-                    str = 'strong'
+                    str = 'Strongly'
                 } else {
-                    str = 'very strong'
+                    str = 'Very strongly'
                 }
-                return `Overall ${str} ${this.slope > 0 ? 'increasing' : 'decreasing'} trend (${Math.round(this.correlationStrength * 10000) / 100}%)`
+                return `${str} ${this.slope > 0 ? 'increasing' : 'decreasing'} (${Math.round(this.correlationStrength * 10000) / 100}%)`
             }
         },
         stdDev() {
