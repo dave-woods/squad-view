@@ -72,8 +72,24 @@
                 </v-list-item-action>
             </v-list-item>
         </v-list>
+        <div v-if="editSessions" class="manual-state my-3">
+            <v-btn :disabled="!editSessions" @click="loadStateManual" text>Reload State</v-btn>
+            <v-btn :disabled="!editSessions" @click="saveStateManual" text>Save State</v-btn>
+        </div>
+        <v-overlay absolute :value="loader">
+            <v-progress-circular indeterminate size="64"></v-progress-circular>
+        </v-overlay>
     </v-navigation-drawer>
 </template>
+
+<style lang="sass" scoped>
+.manual-state
+    display: flex
+    justify-content: space-evenly
+    position: fixed
+    bottom: 0
+    width: 100%
+</style>
 
 <script>
 import { mapState } from 'vuex'
@@ -84,6 +100,11 @@ export default {
     mixins: [requestsMixin],
     components: {
         'date-picker': DatePicker
+    },
+    data() {
+        return {
+            loader: false
+        }
     },
     computed: {
         ...mapState({
@@ -143,7 +164,29 @@ export default {
             if (!val) {
                 this.$nextTick(async () => await this.setStateToDB(this.$store.state))
             }
-        }
+        },
+        async loadStateManual() {
+            this.loader = true
+            this.loadStateFromDB().then(() => {
+                this.loader = false
+            })
+        },
+        async saveStateManual() {
+            this.loader = true
+            this.saveStateToDB().then(() => {
+                this.loader = false
+            })
+        },
+        async loadStateFromDB() {
+			const data = await this.getStateFromDB()
+			this.$store.dispatch('updateMembersState', data.members)
+			this.$store.dispatch('updateSessionsState', data.sessions)
+			this.$store.dispatch('updateSettingsState', data.settings)
+			this.$store.dispatch('updateExercisesState', data.exercises)
+		},
+		async saveStateToDB() {
+			await this.setStateToDB(this.$store.state)
+		}
     }
 }
 </script>
