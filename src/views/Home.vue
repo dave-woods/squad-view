@@ -30,7 +30,7 @@
       >
 				<p>The app is still under development, so expect things to be broken for now. Feel free to look around in the meantime, and if you have any suggestions, please contact me via the GitHub repo link above.</p>
 			</v-flex>
-      <v-flex
+      <!-- <v-flex
         xs12
         mb-5
       >
@@ -46,8 +46,9 @@
             {{ link.text }}
           </router-link>
         </v-layout>
-      </v-flex>
+      </v-flex> -->
     </v-layout>
+    <v-btn depressed text class="transparent--text" to="/exercise">Exercise</v-btn>
   </v-container>
 </template>
 
