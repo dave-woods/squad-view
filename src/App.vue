@@ -135,6 +135,7 @@ export default {
 			this.$store.dispatch('updateMembersState', data.members)
 			this.$store.dispatch('updateSessionsState', data.sessions)
 			this.$store.dispatch('updateSettingsState', data.settings)
+			this.$store.dispatch('updateExercisesState', data.exercises)
 		},
 		async saveStateToDB() {
 			await this.setStateToDB(this.$store.state)

@@ -11,3 +11,4 @@
 - Setting for where to split one year from the next (e.g. academic year periods)
 - Refactor into smaller parts where possible (e.g. components and mixins)
 - Make stats block(s?) into a component, and put all stats methods into a mixin
+- Add way of adding exercise sessions, and rows to tables
