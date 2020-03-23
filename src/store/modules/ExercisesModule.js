@@ -6,6 +6,9 @@ export default {
       getExerciseSessions: state => state.sessions
     },
     mutations: {
+      addExercise(state, newExercise) {
+        state.sessions[newExercise.sessionIdx].exercises.push(newExercise.exercise)
+      },
       addExerciseSession(state, newSession) {
         state.sessions = [...state.sessions, newSession].sort((a, b) => new Date(a.date) - new Date(b.date))
       },
@@ -14,6 +17,9 @@ export default {
       }
     },
     actions: {
+      addExercise({ commit }, newExercise) {
+        commit('addExercise', newExercise)
+      },
       addExerciseSession({ commit }, newSession) {
         commit('addExerciseSession', newSession)
       },
