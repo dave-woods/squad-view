@@ -15,3 +15,4 @@
 - Restructure store and requestsMixin so as to import only what's needed and not have to update the entire db every time
 - Eventually switch to online db? Probably better to just export as package instead, maybe have way of sharing/exporting data
 - Add admin setting
+- More consistent styling (e.g. titles) across components/views

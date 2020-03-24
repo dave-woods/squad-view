@@ -2,7 +2,7 @@
     <v-container>
         <v-row>
             <v-col cols="auto" class="mx-auto">
-                <h1>Exercise Sessions <v-btn text @click="newSessionDialog = true"><v-icon>mdi-plus</v-icon></v-btn></h1>
+                <h1>Exercise Sessions <v-btn text @click.stop="newSessionDialog = true"><v-icon>mdi-plus</v-icon></v-btn></h1>
                 <v-dialog v-model="newSessionDialog" max-width="700px">
                     <v-card>
                         <v-card-title><span class="headline">New Session</span></v-card-title>
@@ -57,8 +57,9 @@
                             inset
                             vertical
                         ></v-divider>
+                        <span>{{ timeString(s.minutes) }}</span>
                         <v-spacer></v-spacer>
-                        <v-btn color="primary" dark class="mb-2" @click="openAddExerciseDialog(idx)">Add Exercise</v-btn>
+                        <v-btn v-if="editsAllowed" color="primary" dark class="mb-2" @click.stop="openAddExerciseDialog(idx)">Add Exercise</v-btn>
                         <v-dialog v-model="addExerciseDialog[idx]" max-width="700px" @input="v => v || closeAddExerciseDialog()">
                             <v-card>
                                 <v-card-title><span class="headline">Exercise Details</span></v-card-title>
@@ -179,8 +180,11 @@ export default {
 				value: m.id
 			}))
         },
+        editsAllowed() {
+            return this.$store.state.settings.editSessions
+        },
         sessions() {
-            return this.$store.getters.getExerciseSessions
+            return this.$store.getters.getExerciseSessions.slice().reverse()
         },
         tableData() {
             return this.sessions.map(s => {
@@ -248,7 +252,7 @@ export default {
                 })
             }
             this.$store.dispatch('addExercise', {
-                sessionIdx,
+                sessionIdx: (this.sessions.length - 1) - sessionIdx ,
                 exercise: this.newItems[sessionIdx]
             }).then(this.saveStateToDB).then(() => { this.closeAddExerciseDialog() })
         },
@@ -283,6 +287,11 @@ export default {
                 this.newSessionDialog = false
                 this.newSession = {...this.defaultSession}
             })
+        },
+        timeString(minutes) {
+            var h = Math.floor(minutes / 60)
+            var m = minutes % 60
+            return h > 0 ? `${h}h ${m}m` : `${m}m`
         }
     }
 }
