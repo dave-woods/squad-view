@@ -11,5 +11,7 @@
 - Setting for where to split one year from the next (e.g. academic year periods)
 - Refactor into smaller parts where possible (e.g. components and mixins)
 - Make stats block(s?) into a component, and put all stats methods into a mixin
-- Add way of adding exercise sessions, and rows to tables
+# Add way of adding exercise sessions, and rows to tables
 - Restructure store and requestsMixin so as to import only what's needed and not have to update the entire db every time
+- Eventually switch to online db? Probably better to just export as package instead, maybe have way of sharing/exporting data
+- Add admin setting

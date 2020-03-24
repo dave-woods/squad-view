@@ -22,6 +22,7 @@
             <v-tab>Time of Flight</v-tab>
             <v-tab>Competitions</v-tab>
             <v-tab>Session Goals</v-tab>
+            <v-tab>Conditioning</v-tab>
             <v-tab>...</v-tab>
         </v-tabs>
         <v-tabs-items v-model="currentTab">
@@ -93,6 +94,21 @@
             </v-tab-item>
             <v-tab-item>
                 <h1>Session goals</h1>
+            </v-tab-item>
+            <v-tab-item>
+                <h1>Conditioning</h1>
+                <v-container>
+                    <v-row>
+                        <v-col cols="4" v-for="(es, esidx) in exerciseData" :key="`conditioning-${esidx}`">
+                            <v-card>
+                                <v-card-title>{{ es.date }}</v-card-title>
+                                <v-list dense height="400px" style="overflow-y: auto">
+                                    <v-list-item dense v-for="(e, eidx) in es.exercises" :key="`ex-${esidx}-${eidx}`">{{ e.exercise }}</v-list-item>
+                                </v-list>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </v-container>
             </v-tab-item>
             <v-tab-item>
                 <h1>Notes</h1>
@@ -245,7 +261,11 @@ export default {
 		},
 		memberCards() {
 			return this.showSingleSession ? this.namesAndTimes : this.namesAndTimes.filter(n => n.avgTimes.filter(t => t > 0).length > 1)
-		}
+        },
+        exerciseData() {
+            var es = this.$store.getters.getExerciseSessions.filter(s => s.memberIds.includes(this.mid))
+            return es.length > 0 ? es : undefined
+        }
     },
     watch: {
         id(val) {
