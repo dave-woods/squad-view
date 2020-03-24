@@ -10,7 +10,7 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
     "json:serve": "json-server --watch db.json --port 8082",
-    "start": "concurrently -k -r \"npm:json:serve\" \"npm:electron:serve\""
+    "start": "concurrently -k -r -s \"first\" \"npm:json:serve\" \"npm:electron:serve\""
   },
   "main": "background.js",
   "dependencies": {
