@@ -26,10 +26,7 @@
 						fab
 						title="Add new session"
 					>
-						<v-icon
-							color="primary"
-							large
-						>mdi-plus</v-icon>
+						<v-icon color="primary" large>mdi-plus</v-icon>
 					</v-btn>
 				</template>
 				<new-session-form ref="nsform" @close-form="displayForm = false; snackbar = true"></new-session-form>

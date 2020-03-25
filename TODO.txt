@@ -16,3 +16,4 @@
 - Eventually switch to online db? Probably better to just export as package instead, maybe have way of sharing/exporting data
 - Add admin setting
 - More consistent styling (e.g. titles) across components/views
+- Ability to compare periods for a single member (e.g. this year vs last)

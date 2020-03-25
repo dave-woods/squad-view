@@ -2,19 +2,29 @@
     <v-container v-if="currentMember">
         <v-row>
             <v-col cols="auto">
-                <v-btn icon :disabled="!mid || mid === 1" @click="selectMember(mid - 1)">
-                    <v-icon>mdi-chevron-left</v-icon>
-                </v-btn>
+                <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                        <v-btn icon :disabled="!mid || mid === 1" @click="selectMember(mid - 1)" v-on="on">
+                            <v-icon>mdi-chevron-left</v-icon>
+                        </v-btn>
+                    </template>
+                    <span>Previous Member</span>
+                </v-tooltip>
             </v-col>
             <v-spacer></v-spacer>
             <v-col cols="auto">
-                <h1 class="display-1 font-weight-bold">{{ currentMember.name }}</h1>
+                <h1 class="display-1 font-weight-bold text-center">{{ currentMember.name }}</h1>
             </v-col>
             <v-spacer></v-spacer>
             <v-col cols="auto">
-                <v-btn icon :disabled="!mid || mid === members.length" @click="selectMember(mid + 1)">
-                    <v-icon>mdi-chevron-right</v-icon>
-                </v-btn>
+                <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                        <v-btn icon :disabled="!mid || mid === members.length" @click="selectMember(mid + 1)" v-on="on">
+                            <v-icon>mdi-chevron-right</v-icon>
+                        </v-btn>
+                    </template>
+                    <span>Next Member</span>
+                </v-tooltip>
             </v-col>
         </v-row>
         <v-tabs v-model="currentTab" grow dark background-color="primary">
@@ -31,63 +41,7 @@
                     <v-card-title class="pb-0">Stats for {{ currentMember.name.split(' ')[0] }}</v-card-title>
                 </v-card>
                 <line-chart :chart-data="chartData" :options="chartOptions" :styles="{marginBottom: '1em'}"></line-chart>
-                <v-card flat class="mx-auto px-4">
-                    <v-list light>
-                        <v-list-item>
-                            <v-list-item-content>
-                                Number of sessions
-                            </v-list-item-content>
-                            <v-list-item-content>
-                                {{ avgTimesFiltered.length }}
-                            </v-list-item-content>
-                        </v-list-item>
-                        <v-divider></v-divider>
-                        <v-list-item>
-                            <v-list-item-content>
-                                Personal best time
-                            </v-list-item-content>
-                            <v-list-item-content>
-                                {{ highestTime }}
-                            </v-list-item-content>
-                        </v-list-item>
-                        <v-divider></v-divider>
-                        <v-list-item>
-                            <v-list-item-content>
-                                Mean time
-                            </v-list-item-content>
-                            <v-list-item-content>
-                                {{ overallMeanTime }}
-                            </v-list-item-content>
-                        </v-list-item>
-                        <v-divider></v-divider>
-                        <v-list-item>
-                            <v-list-item-content>
-                                Overall trend
-                            </v-list-item-content>
-                            <v-list-item-content>
-                                {{ trendText }}
-                            </v-list-item-content>
-                        </v-list-item>
-                        <v-divider></v-divider>
-                        <v-list-item>
-                            <v-list-item-content>
-                                Deviation from mean
-                            </v-list-item-content>
-                            <v-list-item-content>
-                                {{ stdDev }}
-                            </v-list-item-content>
-                        </v-list-item>
-                        <v-divider></v-divider>
-                        <v-list-item>
-                            <v-list-item-content>
-                                Deviation from trend
-                            </v-list-item-content>
-                            <v-list-item-content>
-                                {{ trendDev }}
-                            </v-list-item-content>
-                        </v-list-item>
-                    </v-list>
-                </v-card>
+                <stat-list :stats="timeOfFlightStats" long></stat-list>
             </v-tab-item>
             <v-tab-item>
                 <h1>Comp stats</h1>
@@ -96,18 +50,27 @@
                 <h1>Session goals</h1>
             </v-tab-item>
             <v-tab-item>
-                <h1>Conditioning</h1>
+                <v-card flat class="mx-auto px-4">
+                    <v-card-title class="pb-0">Conditioning for {{ currentMember.name.split(' ')[0] }}</v-card-title>
+                </v-card>
                 <v-container>
-                    <v-row>
-                        <v-col cols="4" v-for="(es, esidx) in exerciseData" :key="`conditioning-${esidx}`">
-                            <v-card>
-                                <v-card-title>{{ es.date }}</v-card-title>
-                                <v-list dense height="400px" style="overflow-y: auto">
-                                    <v-list-item dense v-for="(e, eidx) in es.exercises" :key="`ex-${esidx}-${eidx}`">{{ e.exercise }}</v-list-item>
-                                </v-list>
-                            </v-card>
-                        </v-col>
-                    </v-row>
+                    <v-data-iterator :items="exerciseData">
+                        <template v-slot:default="{ items }">
+                            <v-row>
+                                <v-col cols="6" v-for="(es, esidx) in items" :key="`conditioning-${esidx}`">
+                                    <v-card>
+                                        <v-card-title>{{ es.date }}</v-card-title>
+                                        <v-list dense height="400px" style="overflow-y: auto">
+                                            <v-list-item dense v-for="(e, eidx) in es.exercises" :key="`ex-${esidx}-${eidx}`">
+                                                <v-list-item-content>{{ e.exercise }}</v-list-item-content>
+                                                <v-list-item-content class="align-end">{{ exerciseString(e.data.find(d => d.id === mid), e.perSide) }}</v-list-item-content>
+                                            </v-list-item>
+                                        </v-list>
+                                    </v-card>
+                                </v-col>
+                            </v-row>
+                        </template>
+                    </v-data-iterator>
                 </v-container>
             </v-tab-item>
             <v-tab-item>
@@ -115,28 +78,15 @@
             </v-tab-item>
         </v-tabs-items>
     </v-container>
-    <v-container v-else >
-        <v-row>
-            <v-col cols="12">
-		        <h1 style="text-align: center" class="display-1 font-weight-bold">Members</h1>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col
-                cols="6"
-                v-for="(m, i) in memberCards"
-                :key="`member-card-${i}`"
-            >
-		        <member-card :member="m" @select-member="selectMember"></member-card>
-            </v-col>
-        </v-row>
-	</v-container>
+    <member-selector v-else :selectMember="selectMember"></member-selector>
 </template>
 
 <script>
 import LineChart from '@/components/LineChart'
-import MemberQuickCard from '../components/MemberQuickCard'
+import MemberSelector from '@/components/MemberSelector'
+import StatList from '@/components/StatList'
 import util from '@/mixins/util'
+
 export default {
     data() {
         return {
@@ -158,21 +108,76 @@ export default {
     mixins: [util],
     components: {
         'line-chart': LineChart,
-		'member-card': MemberQuickCard
+        'member-selector': MemberSelector,
+        'stat-list': StatList
 	},
     computed: {
-        showSingleSession() {
-            return this.$store.state.settings.showSingleSession
+        timeOfFlightStats() {
+            return [
+                {
+                    text: {
+                        long: 'Number of sessions',
+                        short: '# times'
+                    },
+                    value: this.avgTimesFiltered.length
+                },
+                {
+                    text: {
+                        long: 'Personal best time',
+                        short: 'PBT'
+                    },
+                    value: this.highestTime
+                },
+                {
+                    text: {
+                        long: 'Mean time',
+                        short: 'Mean'
+                    },
+                    value: this.overallMeanTime
+                },
+                {
+                    text: {
+                        long: 'Median time',
+                        short: 'Median'
+                    },
+                    value: this.overallMedianTime
+                },
+                {
+                    text: {
+                        long: 'Overall trend',
+                        short: 'Trend'
+                    },
+                    value: this.trendText
+                },
+                {
+                    text: {
+                        long: 'Deviation from mean',
+                        short: 'Std dev'
+                    },
+                    value: this.stdDev
+                },
+                {
+                    text: {
+                        long: 'Deviation from trend',
+                        short: 'Trend dev'
+                    },
+                    value: this.trendDev
+                }
+            ]
         },
         trimEmpty() {
             return this.$store.state.settings.trimEmpty
         },
-        // use mapState for the above?
         members() {
             return this.$store.getters.getAllMembers
         },
         overallMeanTime() {
             return Math.round(this.avgTimesFiltered.reduce((acc, cur) => acc + cur, 0) / this.avgTimesFiltered.length * 10000) / 10000
+        },
+        overallMedianTime() {
+            var times = this.$store.getters.getAllAttendancesById(this.mid).filter(a => a).flatMap(a => a.times).sort((a, b) => a - b)
+            var mid = Math.floor(times.length / 2)
+            return times.length % 2 !== 0 ? times[mid] : (times[mid - 1] + times[mid]) / 2
         },
         avgTimes() {
             return this.$store.getters.getAvgTimesById(this.mid).slice(...this.trim)
@@ -248,20 +253,7 @@ export default {
                     return Math.max(...cur, acc)
                 }
             }, 0)
-        },
-        // originally from /graph
-        namesAndTimes() {
-			return this.$store.getters.getAllMembers.map(m => {
-				return {
-					id: m.id,
-					name: m.name,
-					avgTimes: this.$store.getters.getAvgTimesById(m.id)
-				}
-			})
-		},
-		memberCards() {
-			return this.showSingleSession ? this.namesAndTimes : this.namesAndTimes.filter(n => n.avgTimes.filter(t => t > 0).length > 1)
-        },
+        },		
         exerciseData() {
             var es = this.$store.getters.getExerciseSessions.filter(s => s.memberIds.includes(this.mid))
             return es.length > 0 ? es : undefined
@@ -357,7 +349,17 @@ export default {
         },
         selectMember(id) {
 			this.$router.push(`/members/${id}`)
-		}
+        },
+        exerciseString(d, ps) {
+            return d.sets > 0 ?
+                `${ d.sets } set${
+                    parseInt(d.sets) === 1 ? '' : 's'
+                } of ${
+                    parseInt(d.reps) > 0 ? d.reps + " reps" : d.seconds + " seconds"
+                }${
+                    ps ? " per side": ""
+                }` : ''
+        }
     }
 }
 </script>

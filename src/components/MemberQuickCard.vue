@@ -19,11 +19,6 @@
 		<v-card-text v-else style="display: flex; justify-content: center; align-items: center">
 			More data needed...
 		</v-card-text>
-		<!-- <v-fade-transition>
-			<v-overlay v-if="hover" absolute color="primary">
-				<v-btn @click="selectMember()" color="primary">See more info</v-btn>
-			</v-overlay>
-		</v-fade-transition> -->
 	</v-card>
 </template>
 
@@ -47,7 +42,6 @@ export default {
 	},
 	methods: {
 		selectMember() {
-			// this.$router.push(`/members/${this.member.id}`)
 			this.$emit('select-member', this.member.id)
 		}
 	}

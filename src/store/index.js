@@ -10,10 +10,17 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    settingsDrawerOpen: false
   },
   mutations: {
+    setSettingsDrawerOpen(state, open) {
+      state.settingsDrawerOpen = open
+    }
   },
   actions: {
+    setSettingsDrawerOpen({ commit }, open) {
+      commit('setSettingsDrawerOpen', open)
+    }
   },
   modules: {
     sessions: SessionsModule,

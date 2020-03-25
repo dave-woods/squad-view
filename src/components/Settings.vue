@@ -4,8 +4,7 @@
         temporary
         app
         width="512px"
-        :value="value"
-        @input="drawer"
+        v-model="settingsDrawerOpenModel"
     >
         <v-container class="primary white--text">
             <v-row class="px-4">
@@ -13,7 +12,7 @@
                     <span class="title">Settings</span>
                 </v-col>
                 <v-col cols="auto">
-                    <v-btn icon tile dark @click="drawer(false)"><v-icon>mdi-close</v-icon></v-btn>
+                    <v-btn icon tile dark @click="settingsDrawerOpenModel = false"><v-icon>mdi-close</v-icon></v-btn>
                 </v-col>
             </v-row>
         </v-container>
@@ -96,7 +95,6 @@ import { mapState } from 'vuex'
 import { requestsMixin } from '@/mixins/requestsMixin'
 import DatePicker from '@/components/DatePicker'
 export default {
-    props: ['value'],
     mixins: [requestsMixin],
     components: {
         'date-picker': DatePicker
@@ -112,7 +110,8 @@ export default {
             trimEmpty: state => state.settings.trimEmpty,
             editSessions: state => state.settings.editSessions,
             startDate: state => new Date(state.settings.startDate).toISOString().substr(0, 10),
-            endDate: state => new Date(state.settings.endDate).toISOString().substr(0, 10)
+            endDate: state => new Date(state.settings.endDate).toISOString().substr(0, 10),
+            settingsDrawerOpen: state => state.settingsDrawerOpen
         }),
         dateRange() {
             return this.$store.getters.getDateRange
@@ -156,15 +155,21 @@ export default {
             set(value) {
                 this.$store.dispatch('setEndDate', new Date(value))
             }
+        },
+        settingsDrawerOpenModel: {
+            get() {
+                return this.settingsDrawerOpen
+            },
+            set(value) {
+                if (!value){
+                    this.setStateToDB(this.$store.state).then(() => this.$store.dispatch('setSettingsDrawerOpen', value))
+                } else {
+                    this.$store.dispatch('setSettingsDrawerOpen', value)
+                }
+            }
         }
     },
     methods: {
-        async drawer(val) {
-            this.$emit('input', val)
-            if (!val) {
-                this.$nextTick(async () => await this.setStateToDB(this.$store.state))
-            }
-        },
         async loadStateManual() {
             this.loader = true
             this.loadStateFromDB().then(() => {

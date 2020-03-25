@@ -1,8 +1,8 @@
 <template>
     <v-container>
         <v-row>
-            <v-col cols="auto" class="mx-auto">
-                <h1>Exercise Sessions <v-btn text @click.stop="newSessionDialog = true"><v-icon>mdi-plus</v-icon></v-btn></h1>
+            <v-col>
+                <h1 class="display-1 font-weight-bold text-center">Exercise Sessions <v-btn text @click.stop="newSessionDialog = true"><v-icon>mdi-plus</v-icon></v-btn></h1>
                 <v-dialog v-model="newSessionDialog" max-width="700px">
                     <v-card>
                         <v-card-title><span class="headline">New Session</span></v-card-title>
