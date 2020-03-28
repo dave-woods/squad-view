@@ -161,6 +161,7 @@ export default {
 					}
 				} else {
 					this.$store.dispatch('addMember', { name: ms })
+					.then(() => this.saveStateToDB('members'))
 					return {
 						id: this.$store.getters.getLastAddedMember.id,
 						times: this.timeOfFlightData[idx].filter(t => t !== '-').map(t => parseFloat(t)),
@@ -174,7 +175,7 @@ export default {
 				conditioning: this.formConditioning,
 				attendees: tof
 			}).then(() => {
-				this.saveStateToDB()
+				this.saveStateToDB('sessions')
 				this.$emit('close-form')
 				this.resetForm()
 			})
@@ -207,9 +208,6 @@ export default {
 				this.formDate = new Date().toISOString().substr(0, 10)
 				this.$refs.form.resetValidation()
 			}
-		},
-		async saveStateToDB() {
-			await this.setStateToDB(this.$store.state)
 		}
 	}
 }

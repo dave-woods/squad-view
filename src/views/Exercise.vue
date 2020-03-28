@@ -254,7 +254,9 @@ export default {
             this.$store.dispatch('addExercise', {
                 sessionIdx: (this.sessions.length - 1) - sessionIdx ,
                 exercise: this.newItems[sessionIdx]
-            }).then(this.saveStateToDB).then(() => { this.closeAddExerciseDialog() })
+            })
+            .then(() => { this.saveStateToDB('exercises') })
+            .then(() => { this.closeAddExerciseDialog() })
         },
         closeAddExerciseDialog() {
             this.addExerciseDialog = this.sessions.map(() => false)
@@ -274,16 +276,15 @@ export default {
                 }
             })
         },
-        async saveStateToDB() {
-			await this.setStateToDB(this.$store.state)
-        },
         openAddExerciseDialog(sessionIdx) {
             this.addExerciseDialog[sessionIdx] = true
             this.sameForAll = false
             this.newItems = this.getNewItems()
         },
         addNewSession() {
-            this.$store.dispatch('addExerciseSession', this.newSession).then(this.saveStateToDB).then(() => {
+            this.$store.dispatch('addExerciseSession', this.newSession)
+            .then(() => { this.saveStateToDB('exercises') })
+            .then(() => {
                 this.newSessionDialog = false
                 this.newSession = {...this.defaultSession}
             })

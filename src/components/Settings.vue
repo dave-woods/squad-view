@@ -12,7 +12,7 @@
                     <span class="title">Settings</span>
                 </v-col>
                 <v-col cols="auto">
-                    <v-btn icon tile dark @click="settingsDrawerOpenModel = false"><v-icon>mdi-close</v-icon></v-btn>
+                    <v-btn icon tile dark @click.stop="settingsDrawerOpenModel = false"><v-icon>mdi-close</v-icon></v-btn>
                 </v-col>
             </v-row>
         </v-container>
@@ -161,8 +161,8 @@ export default {
                 return this.settingsDrawerOpen
             },
             set(value) {
-                if (!value){
-                    this.setStateToDB(this.$store.state).then(() => this.$store.dispatch('setSettingsDrawerOpen', value))
+                if (this.settingsDrawerOpen && !value){
+                    this.saveStateToDB('settings').then(() => this.$store.dispatch('setSettingsDrawerOpen', value))
                 } else {
                     this.$store.dispatch('setSettingsDrawerOpen', value)
                 }
@@ -181,17 +181,7 @@ export default {
             this.saveStateToDB().then(() => {
                 this.loader = false
             })
-        },
-        async loadStateFromDB() {
-			const data = await this.getStateFromDB()
-			this.$store.dispatch('updateMembersState', data.members)
-			this.$store.dispatch('updateSessionsState', data.sessions)
-			this.$store.dispatch('updateSettingsState', data.settings)
-			this.$store.dispatch('updateExercisesState', data.exercises)
-		},
-		async saveStateToDB() {
-			await this.setStateToDB(this.$store.state)
-		}
+        }
     }
 }
 </script>
