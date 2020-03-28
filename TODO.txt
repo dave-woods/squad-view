@@ -22,3 +22,5 @@
 - Move saving to db into store modules? Then store and db would always be in sync after a dispatch
 - Defer loading from db until needed?
 - Make db loading methods more generic (similar to saving methods)
+- Date range setting should allow for end date to stick to "today" instead of a specific date
+- Left and right in member pages should skip members who are omitted in MemberSelector component
