@@ -24,6 +24,15 @@ export default {
         filterObjByKey(obj, key) {
             var {[key]: _, ...newObj} = obj
             return newObj
-        }
+        },
+        dateToDateString(d) {
+			if (d) { 
+				return new Date(d).toLocaleDateString('en-IE', {
+					day: 'numeric',
+					month: 'long',
+					year: 'numeric'
+				})
+			}
+		}
     }
 }

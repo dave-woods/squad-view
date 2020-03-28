@@ -4,7 +4,8 @@ const MODULE_NAMES = [
   'sessions',
   'members',
   'settings',
-  'exercises'
+  'exercises',
+  'competitions'
 ]
 
 export const requestsMixin = {
@@ -14,11 +15,13 @@ export const requestsMixin = {
       var { data: members } = await axios.get(`${APIURL}/members`)
       var { data: settings } = await axios.get(`${APIURL}/settings`)
       var { data: exercises } = await axios.get(`${APIURL}/exercises`)
+      var { data: competitions } = await axios.get(`${APIURL}/competitions`)
       return {
         sessions,
         members,
         settings,
-        exercises
+        exercises,
+        competitions
       }
     },
     async setStateToDB(data, moduleName) {
@@ -34,6 +37,7 @@ export const requestsMixin = {
 			this.$store.dispatch('updateSessionsState', data.sessions)
 			this.$store.dispatch('updateSettingsState', data.settings)
 			this.$store.dispatch('updateExercisesState', data.exercises)
+			this.$store.dispatch('updateCompetitionsState', data.competitions)
 		},
 		async saveStateToDB(moduleName = undefined) {
       if (moduleName && MODULE_NAMES.includes(moduleName)) {

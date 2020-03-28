@@ -47,11 +47,7 @@
             >
                 <template v-slot:top>
                     <v-toolbar flat color="white">
-                        <v-toolbar-title>{{ new Date(s.date).toLocaleDateString('en-IE', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric'
-                        }) }}</v-toolbar-title>
+                        <v-toolbar-title>{{ dateToDateString(s.date) }}</v-toolbar-title>
                         <v-divider
                             class="mx-4"
                             inset
@@ -162,9 +158,10 @@
 
 <script>
 import { requestsMixin } from '@/mixins/requestsMixin'
+import util from '@/mixins/util'
 import DatePicker from '@/components/DatePicker'
 export default {
-    mixins: [requestsMixin],
+    mixins: [requestsMixin, util],
     components: {
         'date-picker': DatePicker
     },

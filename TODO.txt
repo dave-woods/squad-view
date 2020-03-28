@@ -16,6 +16,9 @@
 - Eventually switch to online db? Probably better to just export as package instead, maybe have way of sharing/exporting data
 - Add admin setting
 - More consistent styling (e.g. titles) across components/views
+- More consistent coding arrangement (e.g. data before computed, etc)
+- Clean up inline styles where appropriate
 - Ability to compare periods for a single member (e.g. this year vs last)
 - Move saving to db into store modules? Then store and db would always be in sync after a dispatch
 - Defer loading from db until needed?
+- Make db loading methods more generic (similar to saving methods)

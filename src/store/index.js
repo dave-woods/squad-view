@@ -5,6 +5,7 @@ import SessionsModule from './modules/SessionsModule'
 import MembersModule from './modules/MembersModule'
 import SettingsModule from './modules/SettingsModule'
 import ExercisesModule from './modules/ExercisesModule'
+import CompetitionsModule from './modules/CompetitionsModule'
 
 Vue.use(Vuex)
 
@@ -26,6 +27,7 @@ export default new Vuex.Store({
     sessions: SessionsModule,
     members: MembersModule,
     settings: SettingsModule,
-    exercises: ExercisesModule
+    exercises: ExercisesModule,
+    competitions: CompetitionsModule
   }
 })

@@ -62,7 +62,9 @@
 
 <script>
 import NewSessionForm from '@/components/NewSessionForm'
+import util from '@/mixins/util'
 export default {
+	mixins: [util],
 	data() {
 		return {
 			displayForm: false,
@@ -92,15 +94,6 @@ export default {
 	methods: {
 		getMember(id) {
 			return this.$store.getters.getMemberById(id)
-		},
-		dateToDateString(d) {
-			if (d) { 
-				return new Date(d).toLocaleDateString('en-IE', {
-					day: 'numeric',
-					month: 'long',
-					year: 'numeric'
-				})
-			}
 		},
 		editSession(session) {
 			this.displayForm = true
