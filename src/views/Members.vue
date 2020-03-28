@@ -38,13 +38,19 @@
         <v-tabs-items v-model="currentTab">
             <v-tab-item>
                 <v-card flat class="mx-auto px-4">
-                    <v-card-title class="pb-0">Stats for {{ currentMember.name.split(' ')[0] }}</v-card-title>
+                    <v-card-title class="pb-0">Time of flight stats for {{ currentMember.name.split(' ')[0] }}</v-card-title>
                 </v-card>
                 <line-chart :chart-data="chartData" :options="chartOptions" :styles="{marginBottom: '1em'}"></line-chart>
                 <stat-list :stats="timeOfFlightStats" long></stat-list>
             </v-tab-item>
             <v-tab-item>
-                <h1>Comp stats</h1>
+                <v-card flat class="mx-auto px-4">
+                    <v-card-title>Competition details for {{ currentMember.name.split(' ')[0] }}</v-card-title>
+                </v-card>
+                <v-data-table
+                    :headers="['Name', 'Date', 'Level', 'Score', 'Rank'].map(s => ({ text: s, value: s.toLowerCase() }))"
+                    :items="competitions"
+                ></v-data-table>
             </v-tab-item>
             <v-tab-item>
                 <h1>Session goals</h1>
@@ -164,6 +170,18 @@ export default {
                     value: this.trendDev
                 }
             ]
+        },
+        competitions() {
+            return this.$store.getters.getCompetitionsByMember(this.mid).map(comp => {
+                var currentCompetitor = comp.competitors.find(c => c.id === this.mid)
+                return {
+                    name: comp.name,
+                    date: this.dateToDateString(comp.startDate),
+                    level: currentCompetitor.individual.level,
+                    score: currentCompetitor.individual.total,
+                    rank: currentCompetitor.individual.rank
+                }
+            })
         },
         trimEmpty() {
             return this.$store.state.settings.trimEmpty

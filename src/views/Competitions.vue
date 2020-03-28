@@ -28,7 +28,7 @@
                 <v-chip style="pointer-events: none" v-else color="transparent">{{ item.rank }}</v-chip>
               </template>
               <template v-slot:expanded-item="{ headers, item }">
-                <td :colspan="headers.length" style="background: #DEDEDE">
+                <td :colspan="headers.length" style="background: #DEDEDE66">
                   <v-data-table
                     :headers="['Skills', 'Execution', 'HD', 'Tariff', 'Bonus', 'Penalty', 'Total'].map(s => ({text: s, value: s.toLowerCase()}))"
                     :items="item.rest.individual.routines"

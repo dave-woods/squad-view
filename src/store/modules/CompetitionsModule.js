@@ -4,7 +4,8 @@ export default {
       nextId: 0
     },
     getters: {
-      getCompetitions: state => state.competitions
+      getCompetitions: state => state.competitions,
+      getCompetitionsByMember: state => id => state.competitions.filter(c => c.competitors.map(m => m.id).includes(id))
     },
     mutations: {
       addCompetitor(state, { competitionId, competitor }) {
