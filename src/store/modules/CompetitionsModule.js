@@ -4,8 +4,10 @@ export default {
       nextId: 0
     },
     getters: {
-      getCompetitions: state => state.competitions,
-      getCompetitionsByMember: state => id => state.competitions.filter(c => c.competitors.map(m => m.id).includes(id))
+      getCompetitions: (state, getters) => state.competitions.filter(c => {
+        return new Date(c.endDate) >= getters.getStartDate && new Date(c.startDate) <= getters.getEndDate
+      }),
+      getCompetitionsByMember: (state, getters) => id => getters.getCompetitions.filter(c => c.competitors.map(m => m.id).includes(id))
     },
     mutations: {
       addCompetitor(state, { competitionId, competitor }) {

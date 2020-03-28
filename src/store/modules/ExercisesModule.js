@@ -3,7 +3,10 @@ export default {
       sessions: []
     },
     getters: {
-      getExerciseSessions: state => state.sessions
+      getExerciseSessions: (state, getters) => state.sessions.filter(s => {
+        var d = new Date(s.date)
+        return d >= getters.getStartDate && d <= getters.getEndDate
+      })
     },
     mutations: {
       addExercise(state, newExercise) {
