@@ -8,9 +8,18 @@
     <v-row v-for="comp in competitions" :key="comp.id">
       <v-col>
         <v-card>
-          <v-card-title>{{ comp.name }}</v-card-title>
-          <v-card-subtitle>{{ duration(comp.startDate, comp.endDate) }} in {{ comp.location }}</v-card-subtitle>
-          <v-card-text>
+          <v-container>
+          <v-row>
+            <v-col>
+              <v-card-title>{{ comp.name }}</v-card-title>
+              <v-card-subtitle>{{ duration(comp.startDate, comp.endDate) }} in {{ comp.location }}</v-card-subtitle>
+            </v-col>
+            <v-col cols="auto">
+              <v-card-actions><v-checkbox v-model="selectedComp" :value="comp.id"></v-checkbox></v-card-actions>
+            </v-col>
+          </v-row>
+          </v-container>
+          <v-card-text v-if="selectedComp.includes(comp.id)">
             <v-data-table
               :headers="individualHeaders"
               :items="comp.competitors.map(individualItemsMap)"
@@ -63,6 +72,7 @@ export default {
   data() {
     return {
       expandedRow: [],
+      selectedComp: [],
       individualHeaders: [
         {
           text: 'Name',
