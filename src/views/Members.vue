@@ -29,6 +29,7 @@
         </v-row>
         <v-tabs v-model="currentTab" grow dark background-color="primary">
             <v-tabs-slider color="primary lighten-3"></v-tabs-slider>
+            <!-- <v-tab>Info</v-tab> -->
             <v-tab>Time of Flight</v-tab>
             <v-tab>Competitions</v-tab>
             <v-tab>Session Goals</v-tab>
@@ -36,6 +37,7 @@
             <v-tab>...</v-tab>
         </v-tabs>
         <v-tabs-items v-model="currentTab">
+            <!-- <v-tab-item>General Information</v-tab-item> -->
             <v-tab-item>
                 <v-card flat class="mx-auto px-4">
                     <v-card-title class="pb-0">Time of flight stats for {{ currentMember.name.split(' ')[0] }}</v-card-title>
