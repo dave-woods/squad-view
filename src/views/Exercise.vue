@@ -38,109 +38,118 @@
                 </v-dialog>
             </v-col>
         </v-row>
-        <v-row v-for="(s, idx) in sessions" :key="idx"><v-col cols="12"><v-card>
-            <v-data-table
-                :headers="tableData[idx].headers"
-                :items="tableData[idx].items"
-                disable-sort
-                :loading="tableData.length < 1"
-            >
-                <template v-slot:top>
-                    <v-toolbar flat color="white">
-                        <v-toolbar-title>{{ dateToDateString(s.date) }}</v-toolbar-title>
-                        <v-divider
-                            class="mx-4"
-                            inset
-                            vertical
-                        ></v-divider>
-                        <span>{{ timeString(s.minutes) }}</span>
-                        <v-spacer></v-spacer>
-                        <v-btn v-if="editsAllowed" color="primary" dark class="mb-2" @click.stop="openAddExerciseDialog(idx)">Add Exercise</v-btn>
-                        <v-dialog v-model="addExerciseDialog[idx]" max-width="700px" @input="v => v || closeAddExerciseDialog()">
-                            <v-card>
-                                <v-card-title><span class="headline">Exercise Details</span></v-card-title>
-                                <v-card-text>
-                                    <v-container v-if="newItems.length > 0">
-                                        <v-row>
-                                            <v-col cols="5">
-                                                <v-text-field v-model="newItems[idx].exercise" label="Exercise" autofocus></v-text-field>
-                                            </v-col>
+        <v-row>
+            <v-col>
+                <v-pagination v-model="page" :length="sessions.length" total-visible="5"></v-pagination>
+            </v-col>
+        </v-row>
+        <v-row v-for="(s, idx) in sessions" :key="idx">
+            <v-col cols="12" v-if="idx + 1 === page">
+                <v-card>
+                    <v-data-table
+                        :headers="tableData[idx].headers"
+                        :items="tableData[idx].items"
+                        disable-sort
+                        :loading="tableData.length < 1"
+                    >
+                        <template v-slot:top>
+                            <v-toolbar flat color="white">
+                                <v-toolbar-title>{{ dateToDateString(s.date) }}</v-toolbar-title>
+                                <v-divider
+                                    class="mx-4"
+                                    inset
+                                    vertical
+                                ></v-divider>
+                                <span>{{ timeString(s.minutes) }}</span>
+                                <v-spacer></v-spacer>
+                                <v-btn v-if="editsAllowed" color="primary" dark class="mb-2" @click.stop="openAddExerciseDialog(idx)">Add Exercise</v-btn>
+                                <v-dialog v-model="addExerciseDialog[idx]" max-width="700px" @input="v => v || closeAddExerciseDialog()">
+                                    <v-card>
+                                        <v-card-title><span class="headline">Exercise Details</span></v-card-title>
+                                        <v-card-text>
+                                            <v-container v-if="newItems.length > 0">
+                                                <v-row>
+                                                    <v-col cols="5">
+                                                        <v-text-field v-model="newItems[idx].exercise" label="Exercise" autofocus></v-text-field>
+                                                    </v-col>
+                                                    <v-spacer></v-spacer>
+                                                    <v-col cols="auto">
+                                                        <v-checkbox v-model="newItems[idx].perSide" label="Each side"></v-checkbox>
+                                                    </v-col>
+                                                    <v-col cols="auto">
+                                                        <v-checkbox v-model="newItems[idx].stretch" label="Stretch"></v-checkbox>
+                                                    </v-col>
+                                                    <v-col cols="auto">
+                                                        <v-checkbox :disabled="s.memberIds.length < 2" v-model="sameForAll" label="Same for all"></v-checkbox>
+                                                    </v-col>
+                                                </v-row>
+                                                <template v-if="!sameForAll">
+                                                    <v-row v-for="(m, midx) in s.memberIds" :key="`ni-${m}`">
+                                                        <v-col cols="auto">
+                                                            <v-text-field disabled class="disabled-nostyle name" :value="getMemberName(m)" label="Name"></v-text-field>
+                                                        </v-col>
+                                                        <v-spacer></v-spacer>
+                                                        <v-col cols="2">
+                                                            <v-text-field v-model="newItems[idx].data[midx].sets" label="Sets" :rules="[v => parseInt(v) >= 0]"></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="2">
+                                                            <v-text-field v-model="newItems[idx].data[midx].reps" label="Reps" :rules="[v => parseInt(v) >= 0]"></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="2">
+                                                            <v-text-field v-model="newItems[idx].data[midx].seconds" label="Seconds" :rules="[v => parseInt(v) >= 0]"></v-text-field>
+                                                        </v-col>
+                                                    </v-row>
+                                                </template>
+                                                <template v-else>
+                                                    <v-row>
+                                                        <v-col cols="auto">
+                                                            <v-text-field disabled class="disabled-nostyle name" :value="getMemberName(newItems[idx].data[0].id)" label="Name"></v-text-field>
+                                                        </v-col>
+                                                        <v-spacer></v-spacer>
+                                                        <v-col cols="2">
+                                                            <v-text-field v-model="newItems[idx].data[0].sets" label="Sets" :rules="[v => parseInt(v) >= 0]"></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="2">
+                                                            <v-text-field v-model="newItems[idx].data[0].reps" label="Reps" :rules="[v => parseInt(v) >= 0]"></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="2">
+                                                            <v-text-field v-model="newItems[idx].data[0].seconds" label="Seconds" :rules="[v => parseInt(v) >= 0]"></v-text-field>
+                                                        </v-col>
+                                                    </v-row>
+                                                    <v-row v-for="m in s.memberIds.slice(1)" :key="`ni-${m}`">
+                                                        <v-col cols="auto">
+                                                            <v-text-field disabled class="disabled-nostyle name" :value="getMemberName(m)" label="Name"></v-text-field>
+                                                        </v-col>
+                                                        <v-spacer></v-spacer>
+                                                        <v-col cols="2">
+                                                            <v-text-field disabled class="disabled-nostyle" v-model="newItems[idx].data[0].sets" label="Sets"></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="2">
+                                                            <v-text-field disabled class="disabled-nostyle" v-model="newItems[idx].data[0].reps" label="Reps"></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="2">
+                                                            <v-text-field disabled class="disabled-nostyle" v-model="newItems[idx].data[0].seconds" label="Seconds"></v-text-field>
+                                                        </v-col>
+                                                    </v-row>
+                                                </template>
+                                            </v-container>
+                                        </v-card-text>
+                                        <v-card-actions>
                                             <v-spacer></v-spacer>
-                                            <v-col cols="auto">
-                                                <v-checkbox v-model="newItems[idx].perSide" label="Each side"></v-checkbox>
-                                            </v-col>
-                                            <v-col cols="auto">
-                                                <v-checkbox v-model="newItems[idx].stretch" label="Stretch"></v-checkbox>
-                                            </v-col>
-                                            <v-col cols="auto">
-                                                <v-checkbox :disabled="s.memberIds.length < 2" v-model="sameForAll" label="Same for all"></v-checkbox>
-                                            </v-col>
-                                        </v-row>
-                                        <template v-if="!sameForAll">
-                                            <v-row v-for="(m, midx) in s.memberIds" :key="`ni-${m}`">
-                                                <v-col cols="auto">
-                                                    <v-text-field disabled class="disabled-nostyle name" :value="getMemberName(m)" label="Name"></v-text-field>
-                                                </v-col>
-                                                <v-spacer></v-spacer>
-                                                <v-col cols="2">
-                                                    <v-text-field v-model="newItems[idx].data[midx].sets" label="Sets" :rules="[v => parseInt(v) >= 0]"></v-text-field>
-                                                </v-col>
-                                                <v-col cols="2">
-                                                    <v-text-field v-model="newItems[idx].data[midx].reps" label="Reps" :rules="[v => parseInt(v) >= 0]"></v-text-field>
-                                                </v-col>
-                                                <v-col cols="2">
-                                                    <v-text-field v-model="newItems[idx].data[midx].seconds" label="Seconds" :rules="[v => parseInt(v) >= 0]"></v-text-field>
-                                                </v-col>
-                                            </v-row>
-                                        </template>
-                                        <template v-else>
-                                            <v-row>
-                                                <v-col cols="auto">
-                                                    <v-text-field disabled class="disabled-nostyle name" :value="getMemberName(newItems[idx].data[0].id)" label="Name"></v-text-field>
-                                                </v-col>
-                                                <v-spacer></v-spacer>
-                                                <v-col cols="2">
-                                                    <v-text-field v-model="newItems[idx].data[0].sets" label="Sets" :rules="[v => parseInt(v) >= 0]"></v-text-field>
-                                                </v-col>
-                                                <v-col cols="2">
-                                                    <v-text-field v-model="newItems[idx].data[0].reps" label="Reps" :rules="[v => parseInt(v) >= 0]"></v-text-field>
-                                                </v-col>
-                                                <v-col cols="2">
-                                                    <v-text-field v-model="newItems[idx].data[0].seconds" label="Seconds" :rules="[v => parseInt(v) >= 0]"></v-text-field>
-                                                </v-col>
-                                            </v-row>
-                                            <v-row v-for="m in s.memberIds.slice(1)" :key="`ni-${m}`">
-                                                <v-col cols="auto">
-                                                    <v-text-field disabled class="disabled-nostyle name" :value="getMemberName(m)" label="Name"></v-text-field>
-                                                </v-col>
-                                                <v-spacer></v-spacer>
-                                                <v-col cols="2">
-                                                    <v-text-field disabled class="disabled-nostyle" v-model="newItems[idx].data[0].sets" label="Sets"></v-text-field>
-                                                </v-col>
-                                                <v-col cols="2">
-                                                    <v-text-field disabled class="disabled-nostyle" v-model="newItems[idx].data[0].reps" label="Reps"></v-text-field>
-                                                </v-col>
-                                                <v-col cols="2">
-                                                    <v-text-field disabled class="disabled-nostyle" v-model="newItems[idx].data[0].seconds" label="Seconds"></v-text-field>
-                                                </v-col>
-                                            </v-row>
-                                        </template>
-                                    </v-container>
-                                </v-card-text>
-                                <v-card-actions>
-                                    <v-spacer></v-spacer>
-                                    <v-btn color="primary" text @click="closeAddExerciseDialog()">Cancel</v-btn>
-                                    <v-btn color="primary" text @click="addExercise(idx)">Save</v-btn>
-                                </v-card-actions>
-                            </v-card>
-                        </v-dialog>
-                    </v-toolbar>
-                </template>
-                <template v-slot:item.exercise="{ item }">
-                    <span :class="item.stretch && 'font-italic'">{{ item.exercise }}</span>
-                </template>
-            </v-data-table>
-        </v-card></v-col></v-row>
+                                            <v-btn color="primary" text @click="closeAddExerciseDialog()">Cancel</v-btn>
+                                            <v-btn color="primary" text @click="addExercise(idx)">Save</v-btn>
+                                        </v-card-actions>
+                                    </v-card>
+                                </v-dialog>
+                            </v-toolbar>
+                        </template>
+                        <template v-slot:item.exercise="{ item }">
+                            <span :class="item.stretch && 'font-italic'">{{ item.exercise }}</span>
+                        </template>
+                    </v-data-table>
+                </v-card>
+            </v-col>
+        </v-row>
     </v-container>
 </template>
 
@@ -207,6 +216,7 @@ export default {
             addExerciseDialog: [],
             newSessionDialog: false,
             newItems: [],
+            page: 1,
             defaultSession: {
                 date: new Date().toISOString().substr(0, 10),
                 minutes: 0,
