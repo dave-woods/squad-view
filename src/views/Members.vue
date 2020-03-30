@@ -42,7 +42,7 @@
                 <v-card flat class="mx-auto px-4">
                     <v-card-title class="pb-0">Time of flight stats for {{ currentMember.name.split(' ')[0] }}</v-card-title>
                 </v-card>
-                <line-chart :chart-data="chartData" :options="chartOptions" :styles="{marginBottom: '1em'}"></line-chart>
+                <line-chart :chart-data="timeOfFlightChartData" :options="chartOptions" :styles="{marginBottom: '1em', minHeight: '400px'}"></line-chart>
                 <stat-list :stats="timeOfFlightStats" long></stat-list>
             </v-tab-item>
             <v-tab-item>
@@ -53,6 +53,21 @@
                     :headers="['Name', 'Date', 'Level', 'Score', 'Rank'].map(s => ({ text: s, value: s.toLowerCase() }))"
                     :items="competitions"
                 ></v-data-table>
+                <line-chart v-if="showMemberCompetitionGraph" :chart-data="{
+                    labels: competitions.map(c => c.date),
+                    datasets: competitions.reduce(
+                        (acc, { level }) => acc.includes(level) ?
+                            acc :
+                            [...acc, level], []
+                        ).map(level => ({
+                            label: level,
+                            backgroundColor: 'transparent',
+                            borderColor: this.rainbow(this.members.length, this.mid-1) + '99',
+                            data: competitions
+                                .map(c => c.level === level ? c.score : undefined)
+                            })
+                        )
+                    }" :options="chartOptions"></line-chart>
             </v-tab-item>
             <v-tab-item>
                 <h1>Session goals</h1>
@@ -98,7 +113,7 @@ import util from '@/mixins/util'
 export default {
     data() {
         return {
-            chartData: {},
+            timeOfFlightChartData: {},
             chartOptions: {
                 spanGaps: true,
                 responsive: true,
@@ -184,6 +199,9 @@ export default {
                     rank: currentCompetitor.individual.rank
                 }
             })
+        },
+        showMemberCompetitionGraph() {
+            return this.$store.state.settings.showMemberCompetitionGraph
         },
         trimEmpty() {
             return this.$store.state.settings.trimEmpty
@@ -308,7 +326,7 @@ export default {
             this.correlationStrength = Math.abs(pearsons)
             this.trendLine = this.avgTimes.map((v, idx) => equation(idx))
             var sessions = this.$store.getters.getSessions.slice(...this.trim)
-            this.chartData = {
+            this.timeOfFlightChartData = {
                 labels: sessions.map(s => s.date),
                 datasets: [{
                     label: this.currentMember.name.split(' ')[0],

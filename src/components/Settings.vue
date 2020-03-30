@@ -34,6 +34,19 @@
             <v-list-item>
                 <v-list-item-content>
                     <v-list-item-title>
+                        Show competition graphs
+                    </v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action>
+                    <v-checkbox
+                        v-model="showMemberCompetitionGraphModel"
+                    ></v-checkbox>
+                </v-list-item-action>
+            </v-list-item>
+            <v-divider></v-divider>
+            <v-list-item>
+                <v-list-item-content>
+                    <v-list-item-title>
                         Omit sessions before and after member attended
                     </v-list-item-title>
                 </v-list-item-content>
@@ -70,10 +83,23 @@
                     </v-list-item-action-text>
                 </v-list-item-action>
             </v-list-item>
+            <v-divider></v-divider>
+            <v-list-item>
+                <v-list-item-content>
+                    <v-list-item-title>
+                        Full Screen
+                    </v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action>
+                    <v-checkbox
+                        v-model="isFullScreenModel"
+                    ></v-checkbox>
+                </v-list-item-action>
+            </v-list-item>
         </v-list>
         <div v-if="editSessions" class="manual-state my-3">
-            <v-btn :disabled="!editSessions" @click="loadStateManual" text>Reload State</v-btn>
-            <v-btn :disabled="!editSessions" @click="saveStateManual" text>Save State</v-btn>
+            <v-btn class="warning" :disabled="!editSessions" @click="loadStateManual" text>Force Load</v-btn>
+            <v-btn class="warning" :disabled="!editSessions" @click="saveStateManual" text>Force Save</v-btn>
         </div>
         <v-overlay absolute :value="loader">
             <v-progress-circular indeterminate size="64"></v-progress-circular>
@@ -111,7 +137,9 @@ export default {
             editSessions: state => state.settings.editSessions,
             startDate: state => new Date(state.settings.startDate).toISOString().substr(0, 10),
             endDate: state => new Date(state.settings.endDate).toISOString().substr(0, 10),
-            settingsDrawerOpen: state => state.settingsDrawerOpen
+            settingsDrawerOpen: state => state.settingsDrawerOpen,
+            isFullScreen: state => state.isFullScreen,
+            showMemberCompetitionGraph: state => state.showMemberCompetitionGraph
         }),
         dateRange() {
             return this.$store.getters.getDateRange
@@ -166,6 +194,22 @@ export default {
                 } else {
                     this.$store.dispatch('setSettingsDrawerOpen', value)
                 }
+            }
+        },
+        isFullScreenModel: {
+            get() {
+                return this.isFullScreen
+            },
+            set(value) {
+                this.$store.dispatch('setFullScreen', value)
+            }
+        },
+        showMemberCompetitionGraphModel: {
+            get() {
+                return this.showMemberCompetitionGraph
+            },
+            set(value) {
+                this.$store.dispatch('setShowMemberCompetitionGraph', value)
             }
         }
     },

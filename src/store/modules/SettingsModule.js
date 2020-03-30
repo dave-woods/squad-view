@@ -4,7 +4,8 @@ export default {
         trimEmpty: true,
         editSessions: false,
         startDate: new Date(0),
-        endDate: new Date()
+        endDate: new Date(),
+        showMemberCompetitionGraph: false
     },
     getters: {
         getStartDate: state => new Date(state.startDate),
@@ -26,12 +27,16 @@ export default {
         setEndDate(state, val) {
             state.endDate = val
         },
+        setShowMemberCompetitionGraph(state, val) {
+            state.showMemberCompetitionGraph = val
+        },
         updateSettingsState(state, newState) {
             state.showSingleSession = newState.showSingleSession
             state.trimEmpty = newState.trimEmpty
             state.editSessions = newState.editSessions
             state.startDate = newState.startDate
             state.endDate = newState.endDate
+            state.showMemberCompetitionGraph = newState.showMemberCompetitionGraph
         }
     },
     actions: {
@@ -49,6 +54,9 @@ export default {
         },
         setEndDate({ commit }, val) {
             commit('setEndDate', val)
+        },
+        setShowMemberCompetitionGraph({ commit }, val) {
+            commit('setShowMemberCompetitionGraph', val)
         },
         updateSettingsState({ commit }, val) {
             commit('updateSettingsState', val)

@@ -149,7 +149,7 @@
       </v-col>
     </v-row>
     <v-item-group>
-      <v-row v-for="(comp, compIdx) in competitions" :key="`competition-${comp.id}`">
+      <v-row v-for="(comp, compIdx) in competitions" :key="`competition-${comp.id}`" dense>
         <v-col>
           <v-item v-slot:default="{ active, toggle }">
             <v-card>
@@ -318,15 +318,14 @@ export default {
     addNewCompetition() {
       this.$store.dispatch('addCompetition', this.newCompetition)
         .then(() => { this.saveStateToDB('competitions') })
-        .then(() => {
-          this.newCompetitionDialog = false
-          this.newCompetition = {...this.defaultCompetition}
-        })
+        .then(() => { this.resetForm() })
     },
     resetForm() {
       this.newCompetitionDialog = false
       this.newCompetition = {...this.defaultCompetition}
       this.selectedCompetitors = []
+      this.page = 1
+      this.newCompetitionFormStep = 1
       this.$refs.form.resetValidation()
     },
     selectCompetitor(e) {
