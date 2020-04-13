@@ -67,6 +67,7 @@ export default {
 		}
 	},
 	beforeMount() {
+		this.$store.commit('startInternalDate')
 		this.loadStateFromDB()
 	},
 	beforeDestroy() {

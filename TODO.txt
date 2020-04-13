@@ -4,23 +4,23 @@
 # Add in last year's data
 # Show data for specified time ranges (e.g. "show data for current year only")
 - Clicking on an individual session should show a page with all the data for that session, including chart(?) for times of flight
-- Add competition scores and link them to members
+# Add competition scores and link them to members
 # Settings page under admin route => put settings in a sidebar (vuetify sidebar?)
 - Add further member data (email? height? weight? skills known? competitive level? photo? age/dob?)
 - Add unique key for sessions rather than using date (since that can be edited); should stop inserting sessions by date and move sorting to elsewhere
 - Setting for where to split one year from the next (e.g. academic year periods)
-- Refactor into smaller parts where possible (e.g. components and mixins)
+# Refactor into smaller parts where possible (e.g. components and mixins)
 - Make stats block(s?) into a component, and put all stats methods into a mixin
 # Add way of adding exercise sessions, and rows to tables
 - Restructure store and requestsMixin so as to import only what's needed and not have to update the entire db every time
 - Eventually switch to online db? Probably better to just export as package instead, maybe have way of sharing/exporting data
 - Add admin setting
-- More consistent styling (e.g. titles) across components/views
+# More consistent styling (e.g. titles) across components/views
 - More consistent coding arrangement (e.g. data before computed, etc)
 - Clean up inline styles where appropriate
 - Ability to compare periods for a single member (e.g. this year vs last)
 - Move saving to db into store modules? Then store and db would always be in sync after a dispatch
 - Defer loading from db until needed?
 - Make db loading methods more generic (similar to saving methods)
-- Date range setting should allow for end date to stick to "today" instead of a specific date
+# Date range setting should allow for end date to stick to "today" instead of a specific date
 - Left and right in member pages should skip members who are omitted in MemberSelector component

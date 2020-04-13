@@ -5,6 +5,7 @@
         transition="scale-transition"
         offset-y
         min-width="290px"
+        :disabled="disabled"
     >
         <template v-slot:activator="{ on }">
             <v-text-field
@@ -14,6 +15,7 @@
                 prepend-icon="mdi-calendar"
                 readonly
                 v-on="on"
+                :disabled="disabled"
             ></v-text-field>
         </template>
         <v-date-picker
@@ -21,13 +23,14 @@
             @input="selectDate"
             :min="min"
             :max="max"
+            :disabled="disabled"
         ></v-date-picker>
     </v-menu>
 </template>
 
 <script>
 export default {
-    props: ['value', 'label', 'min', 'max'],
+    props: ['value', 'label', 'min', 'max', 'disabled'],
     data() {
         return {
             datePopout: false

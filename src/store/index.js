@@ -13,7 +13,9 @@ export default new Vuex.Store({
   state: {
     settingsDrawerOpen: false,
     isFullScreen: false,
-    hideScrollbar: true
+    hideScrollbar: true,
+    internalDate: null,
+    internalDateInterval: null
   },
   mutations: {
     setSettingsDrawerOpen(state, open) {
@@ -24,6 +26,14 @@ export default new Vuex.Store({
     },
     setHideScrollbar(state, hidden) {
       state.hideScrollbar = hidden
+    },
+    startInternalDate(state) {
+      if (!state.internalDateInterval) {
+        state.internalDateInterval = setInterval(() => this.commit('updateInternalDate'), 1000)
+      }
+    },
+    updateInternalDate(state) {
+      state.internalDate = new Date()
     }
   },
   actions: {

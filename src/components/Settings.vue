@@ -15,6 +15,9 @@
                     <v-btn icon tile dark @click.stop="settingsDrawerOpenModel = false"><v-icon>mdi-close</v-icon></v-btn>
                 </v-col>
             </v-row>
+            <v-row dense class="px-4 font-weight-light caption">
+                <v-col><span>{{ currentDateTime }}</span></v-col>
+            </v-row>
         </v-container>
         <v-divider></v-divider>
         <v-list class="pa-4">
@@ -79,8 +82,18 @@
                 <v-list-item-action>
                     <v-list-item-action-text>
                         Start <date-picker v-model="startDateModel" :min="dateRange[0]" :max="dateRange[1]"></date-picker>
-                        End <date-picker v-model="endDateModel" :min="startDateModel" :max="new Date().toISOString().substr(0, 10)"></date-picker>
+                        End <date-picker :disabled="useCurrentDate" v-model="endDateModel" :min="startDateModel" :max="new Date().toISOString().substr(0, 10)"></date-picker>
                     </v-list-item-action-text>
+                </v-list-item-action>
+            </v-list-item>
+            <v-list-item>
+                <v-list-item-content>
+                    <v-list-item-title>
+                        Up to current date
+                    </v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action>
+                    <v-checkbox v-model="useCurrentDateModel"></v-checkbox>
                 </v-list-item-action>
             </v-list-item>
             <v-divider></v-divider>
@@ -135,12 +148,20 @@ export default {
             showSingleSession: state => state.settings.showSingleSession,
             trimEmpty: state => state.settings.trimEmpty,
             editSessions: state => state.settings.editSessions,
-            startDate: state => new Date(state.settings.startDate).toISOString().substr(0, 10),
-            endDate: state => new Date(state.settings.endDate).toISOString().substr(0, 10),
             settingsDrawerOpen: state => state.settingsDrawerOpen,
             isFullScreen: state => state.isFullScreen,
+            useCurrentDate: state => state.settings.useCurrentDate,
             showMemberCompetitionGraph: state => state.showMemberCompetitionGraph
         }),
+        currentDateTime() {
+            return this.$store.state.internalDate.toLocaleString('en-IE')
+        },
+        startDate() {
+            return this.$store.getters.getStartDate.toISOString().substr(0, 10)
+        },
+        endDate() {
+            return this.$store.getters.getEndDate.toISOString().substr(0, 10)
+        },
         dateRange() {
             return this.$store.getters.getDateRange
         },
@@ -182,6 +203,14 @@ export default {
             },
             set(value) {
                 this.$store.dispatch('setEndDate', new Date(value))
+            }
+        },
+        useCurrentDateModel: {
+            get() {
+                return this.useCurrentDate
+            },
+            set(value) {
+                this.$store.dispatch('setUseCurrentDate', value)
             }
         },
         settingsDrawerOpenModel: {

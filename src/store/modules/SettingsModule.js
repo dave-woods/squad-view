@@ -5,11 +5,12 @@ export default {
         editSessions: false,
         startDate: new Date(0),
         endDate: new Date(),
+        useCurrentDate: true,
         showMemberCompetitionGraph: false
     },
     getters: {
         getStartDate: state => new Date(state.startDate),
-        getEndDate: state => new Date(state.endDate),
+        getEndDate: (state, _, rootState) => state.useCurrentDate ? new Date(rootState.internalDate) : new Date(state.endDate),
     },
     mutations: {
         setShowSingleSession(state, val) {
@@ -27,6 +28,9 @@ export default {
         setEndDate(state, val) {
             state.endDate = val
         },
+        setUseCurrentDate(state, val) {
+            state.useCurrentDate = val
+        },
         setShowMemberCompetitionGraph(state, val) {
             state.showMemberCompetitionGraph = val
         },
@@ -36,6 +40,7 @@ export default {
             state.editSessions = newState.editSessions
             state.startDate = newState.startDate
             state.endDate = newState.endDate
+            state.useCurrentDate = newState.useCurrentDate
             state.showMemberCompetitionGraph = newState.showMemberCompetitionGraph
         }
     },
@@ -54,6 +59,9 @@ export default {
         },
         setEndDate({ commit }, val) {
             commit('setEndDate', val)
+        },
+        setUseCurrentDate({ commit }, val) {
+            commit('setUseCurrentDate', val)
         },
         setShowMemberCompetitionGraph({ commit }, val) {
             commit('setShowMemberCompetitionGraph', val)
